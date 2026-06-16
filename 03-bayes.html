@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03 베이즈 정리 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:800;}
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .belief{display:flex; gap:6px; align-items:flex-end; height:80px; margin:10px 0;}
+  .belief .step{flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center;}
+  .belief .bar{width:70%; background:var(--v); border-radius:5px 5px 0 0; min-height:3px; position:relative;}
+  .belief .bar span{position:absolute; top:-17px; left:-10px; right:-10px; text-align:center; font-size:10px; color:var(--ink); font-family:'JetBrains Mono',monospace;}
+  .belief .lab{font-size:10px; color:var(--faint); margin-top:4px; font-family:'JetBrains Mono',monospace; text-align:center;}
+  .eq{font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--panel); border:1px dashed var(--line); border-radius:10px; padding:12px; line-height:1.9;}
+  .eq b{color:var(--hot);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 1 · Chapter 03</div>
+    <h1>베이즈 정리 — 증거로 믿음을 갱신하는 법</h1>
+    <p class="intro">2장에서 봤죠 — "<b>아플 때</b> 양성"(민감도)과 "<b>양성일 때</b> 아픔"(우리가 알고 싶은 것)은 달라요. 베이즈 정리는 이 둘을 잇는 다리예요: <b>아는 방향(P(B|A))으로 모르는 방향(P(A|B))을 거꾸로 계산</b>해요. 그리고 그 핵심엔 <b>사전확률(원래 얼마나 드문가)</b>이 있어요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 사전→사후</button>
+    <button data-s="1">01 · 거꾸로 뒤집기</button>
+    <button data-s="2">02 · 증거로 갱신</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — Prior → Posterior</span>
+    <h2>믿음 = 사전 × 증거</h2>
+    <p class="lead">베이즈의 한 줄: <b>증거를 보기 전 믿음(사전)</b>에 <b>증거가 주는 정보</b>를 곱해 <b>증거를 본 뒤 믿음(사후)</b>으로 갱신해요.</p>
+    <div class="eq" style="margin-top:6px">
+      <span style="color:var(--v)">P(아픔 | 양성)</span> = <b>P(양성 | 아픔)</b> × <span style="color:var(--q)">P(아픔)</span> ÷ P(양성)<br>
+      <span style="font-size:12px;color:var(--muted)">사후확률 = (민감도 × 사전확률) ÷ (양성이 나올 전체 확률)</span>
+    </div>
+    <div class="callout" style="margin-top:12px">
+      <p style="margin:0"><b style="color:var(--q)">사전확률(prior)</b> = 증거 전 "원래 얼마나 그럴까"(예: 병의 희귀도). <b style="color:var(--hot)">우도(likelihood)</b> = 증거가 가설을 얼마나 지지하나(민감도). <b style="color:var(--v)">사후확률(posterior)</b> = 둘을 결합한 갱신된 믿음. 새 증거가 오면 사후가 다시 사전이 되어 또 갱신돼요(Step 2).</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 직관 오류의 대부분은 <b>사전확률을 빼먹어서</b> 생겨요. 베이즈는 그걸 강제로 곱하게 만들죠.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Flip the Direction</span>
+    <h2>민감도·특이도 → 진짜 알고 싶은 확률</h2>
+    <p class="lead">이번엔 <b>민감도</b>(아플 때 양성 맞힐 확률)와 <b>특이도</b>(건강할 때 음성 맞힐 확률)를 <b>따로</b> 조절해요(2장 함정의 정식 버전). 10000명 자연빈도로 P(아픔|양성)을 거꾸로 계산해요.</p>
+    <div class="ctrl"><label>유병률 (10000명 중)</label><input type="range" id="prev" min="1" max="1000" value="100"><span class="val" id="prevv">100명</span></div>
+    <div class="ctrl"><label>민감도 (아픔→양성)</label><input type="range" id="sens" min="500" max="999" value="900"><span class="val" id="sensv">90.0%</span></div>
+    <div class="ctrl"><label>특이도 (건강→음성)</label><input type="range" id="spec" min="500" max="999" value="900"><span class="val" id="specv">90.0%</span></div>
+    <div id="info1" class="callout v" style="margin-top:8px"></div>
+    <div id="bar1" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 민감도를 올려도 <b>특이도가 조금만 낮으면</b> 거짓양성이 폭증해 P(아픔|양성)이 낮아져요. 희귀병일수록 더 그렇죠. <b>특이도와 사전확률</b>이 진짜 중요한 거예요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Update with Evidence</span>
+    <h2>증거가 쌓이면 믿음이 자란다</h2>
+    <p class="lead">한 번의 양성으론 8%여도, <b>독립된 양성이 또 나오면</b> 믿음이 점점 커져요. 사후확률이 다음 검사의 사전확률이 되어 <b>누적</b>되죠(검사 90%/90%, 시작 유병률 1%). 결과를 눌러 갱신해보세요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="pos">🔴 양성 결과</button>
+      <button class="btn" id="neg" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">🟢 음성 결과</button>
+      <button class="btn" id="ureset" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">↺ 리셋</button>
+    </div>
+    <div class="belief" id="belief"></div>
+    <div class="legend">막대 = 매 검사 후 "아플 확률"(사후) · 양성은 올리고 음성은 내려요</div>
+    <div id="info2" class="callout v" style="margin-top:12px"></div>
+    <p class="note" style="margin-top:8px;color:var(--faint)">⚠️ 단, 이 곱셈은 검사들이 <b>서로 독립</b>일 때만 맞아요. <b>똑같은 검사를 반복</b>하면 보통 독립이 아니라(같은 편향이 반복돼) 이만큼 안 올라가요 — 그래서 의사는 <b>다른 종류</b>의 검사를 권하죠.</p>
+    <p class="note" style="margin-top:10px">→ 양성 한 번(1%→8%)은 약한 증거지만, 두 번(→45%)·세 번(→88%)이면 강한 증거가 돼요. 이게 <b>"증거의 누적"</b> — 과학·의학·스팸필터가 믿음을 다듬는 방식이에요.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Recap</span>
+    <h2>베이즈가 알려주는 것</h2>
+    <div class="twocol" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+      <div class="callout q"><div class="ttl">방향을 뒤집는다</div><p style="margin:0">아는 P(B|A)로 알고 싶은 P(A|B)를 계산. "검사가 양성일 때 아플 확률"을 정확히.</p></div>
+      <div class="callout v"><div class="ttl">사전이 중요하다</div><p style="margin:0">같은 검사라도 <b>희귀병이면 사후확률이 낮다</b>. base rate를 절대 빼먹지 말 것.</p></div>
+    </div>
+    <div class="callout good" style="margin-top:14px">
+      <p style="margin:0"><b>베이즈는 "학습"의 수학이에요</b>: 믿음(사전) + 증거 → 갱신된 믿음(사후), 반복. 스팸필터·의료진단·A/B테스트·심지어 우리 뇌도 이렇게 세상을 업데이트해요. <b>강화학습의 RLHF, 머신러닝의 확률모델</b>도 베이즈에 뿌리를 둬요.</p>
+    </div>
+    <p class="note" style="margin-top:16px">→ 여기까지 PART 1(확률의 기초)이에요. 다음 <b>4장</b>부터는 무작위를 숫자로 모형화하는 <b>확률변수와 분포</b>로 넘어가요.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 베이즈 계산은 브라우저에서 실시간 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 03 · 베이즈');
+VZ.setupStepper();
+
+// ---------- STEP 1 : 자연빈도 베이즈 ----------
+(function(){
+  const N=10000; let prev=100, sens=0.90, spec=0.90;
+  function render(){
+    const sick=prev, healthy=N-sick;
+    const tp=sick*sens, fn=sick*(1-sens), fp=healthy*(1-spec), tn=healthy*spec;
+    const pos=tp+fp, pSick = pos>0?tp/pos:0;
+    const rtp=Math.round(tp), rfp=Math.round(fp), rpos=rtp+rfp;   // 표시 명수는 정합되게(반올림 합)
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--v)">P(아픔 | 양성) = <span class="big" style="color:${pSick<0.5?'var(--k)':'var(--good)'}">${(pSick*100).toFixed(0)}%</span></div>
+       <p style="margin:6px 0 0">양성 <b>${rpos}</b>명 = 진짜 아픔 <b style="color:var(--good)">${rtp}</b> + 거짓양성 <b style="color:var(--k)">${rfp}</b>. (음성일 때 아플 확률은 ${(fn/(fn+tn)*100).toFixed(1)}%)</p>`;
+    document.getElementById('bar1').innerHTML =
+      VZ.barRow('진짜 아픔', pos>0?tp/pos:0, {color:'var(--good)', pctText:`${Math.round(tp)}명`}) +
+      VZ.barRow('거짓양성', pos>0?fp/pos:0, {color:'var(--k)', pctText:`${Math.round(fp)}명`});
+  }
+  document.getElementById('prev').oninput=e=>{ prev=+e.target.value; document.getElementById('prevv').textContent=prev+'명'; render(); };
+  document.getElementById('sens').oninput=e=>{ sens=e.target.value/1000; document.getElementById('sensv').textContent=(sens*100).toFixed(1)+'%'; render(); };
+  document.getElementById('spec').oninput=e=>{ spec=e.target.value/1000; document.getElementById('specv').textContent=(spec*100).toFixed(1)+'%'; render(); };
+  render();
+})();
+
+// ---------- STEP 2 : 순차 베이즈 갱신 ----------
+(function(){
+  const sens=0.90, spec=0.90, PRIOR=0.01;
+  let belief, seq;   // belief: 현재 사후, seq: ['시작', '양성', ...]
+  function reset(){ belief=PRIOR; seq=[{lab:'시작', p:PRIOR}]; render(); info('시작 믿음(유병률) 1%. 양성/음성 결과를 눌러 베이즈로 갱신해보세요.'); }
+  function update(positive){
+    // 사후 = (우도×사전)/정규화. 양성 우도: 아픔→sens, 건강→1-spec
+    const lA = positive? sens : (1-sens);
+    const lH = positive? (1-spec) : spec;
+    belief = (lA*belief) / (lA*belief + lH*(1-belief));
+    seq.push({lab:positive?'양성':'음성', p:belief}); if(seq.length>9) seq=seq.slice(-9);
+    render();
+    info(`<div class="ttl" style="color:var(--v)">현재 "아플 확률" = <b>${(belief*100).toFixed(1)}%</b></div>
+      <p style="margin:0">${positive?'양성 증거가 믿음을 <b>올렸어요</b>.':'음성 증거가 믿음을 <b>내렸어요</b>.'} 이 값이 다음 검사의 사전확률이 돼요.</p>`);
+  }
+  function render(){
+    const mx=Math.max(...seq.map(s=>s.p), 0.1);
+    document.getElementById('belief').innerHTML = seq.map((s,i)=>
+      `<div class="step"><div class="bar" style="height:${(s.p/mx*70+3).toFixed(0)}px;background:${s.lab==='양성'?'var(--k)':s.lab==='음성'?'var(--good)':'var(--slate)'}"><span>${(s.p*100).toFixed(s.p<0.1?1:0)}%</span></div><div class="lab">${i+1}.${s.lab}</div></div>`).join('');
+  }
+  function info(m){ document.getElementById('info2').innerHTML=m; }
+  document.getElementById('pos').onclick=()=>update(true);
+  document.getElementById('neg').onclick=()=>update(false);
+  document.getElementById('ureset').onclick=reset;
+  reset();
+})();
+</script>
+</body>
+</html>
