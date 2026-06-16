@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07 큰 수의 법칙 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 3 · Chapter 07</div>
+    <h1>큰 수의 법칙 — 평균은 진실로 수렴한다</h1>
+    <p class="intro">표본을 많이 모을수록 <b>표본평균</b>이 <b>진짜 평균(기댓값)</b>으로 다가가요. 이게 <b>큰 수의 법칙(LLN)</b> — 통계가 "일부로 전체를 추정"할 수 있는 이유예요. 단, 흔한 오해가 하나 있어요: 수렴하는 건 <b>평균(비율)</b>이지 <b>개수</b>가 아니에요. 그 차이가 도박사 오류를 가릅니다.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 정식화</button>
+    <button data-s="1">01 · 어떤 분포든</button>
+    <button data-s="2">02 · 비율 vs 개수</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — The Law</span>
+    <h2>많이 모으면 평균은 진실로</h2>
+    <p class="lead">큰 수의 법칙: 같은 분포에서 <b>독립적으로</b> n개를 뽑아 평균을 내면, n이 커질수록 그 <b>표본평균 X̄</b>이 <b>모평균 μ(기댓값)</b>에 한없이 가까워져요.</p>
+    <div class="callout" style="margin-top:6px">
+      <p style="margin:0 0 8px"><b style="color:var(--q)">왜 중요한가</b>: 우리는 모집단 전체(5천만 명, 무한 시행)를 다 볼 수 없어요. 하지만 <b>표본</b>을 충분히 모으면 그 평균이 진짜 값에 수렴하니, "일부로 전체를 추정"할 수 있죠. 여론조사·실험·품질관리가 다 이 위에 서요.</p>
+      <p style="margin:0"><b style="color:var(--hot)">동전·주사위뿐 아니라</b> 어떤 분포(치우치든, 이상하든)에서도 — 평균만 존재하면 — 성립해요(Step 1).</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 단, "n이 클수록 가까워진다"이지 "유한한 n에서 정확히 맞다"가 아니에요. 얼마나 빨리·정확히 가까워지는지는 8장(CLT)에서.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Any Distribution</span>
+    <h2>치우친 분포여도 평균은 수렴한다</h2>
+    <p class="lead">동전(대칭)뿐 아니라, <b>한쪽으로 치우친</b> 분포에서도 표본평균은 그 분포의 진짜 평균으로 가요. 분포를 골라 뽑아보세요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <span class="note">분포:</span>
+      <button class="btn" id="dDie">주사위(평균 3.5)</button>
+      <button class="btn" id="dSkew" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">치우침(평균 2.0)</button>
+    </div>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="s1">+1</button><button class="btn" id="s50">+50</button><button class="btn" id="s500">+500</button>
+      <button class="btn" id="sreset" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">↺ 리셋</button>
+    </div>
+    <div id="info1" class="callout q"></div>
+    <div class="chart-wrap" id="meanChart" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ "치우침" 분포(대부분 1, 가끔 6)는 좌우대칭이 아닌데도 표본평균이 진짜 평균 <b>2.0</b>으로 수렴하죠. LLN은 분포 모양을 가리지 않아요(평균만 있으면).</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Proportion vs Count</span>
+    <h2>수렴하는 건 비율이지, 개수가 아니다</h2>
+    <p class="lead">동전을 던지며 <b>두 가지</b>를 같이 봐요: ① <b>앞면 비율</b>(→0.5로 수렴) ② <b>앞면 수 − 절반</b>(0으로 <b>끌려가지 않고</b> 멋대로 떠돌아요 — 전형적 폭은 <b>√n 규모로 커짐</b>). 이 차이가 핵심이에요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="f100">+100</button><button class="btn" id="f1000">+1000</button>
+      <button class="btn" id="freset" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">↺ 리셋</button>
+    </div>
+    <div class="twocol">
+      <div><div class="legend" style="margin-bottom:4px">① 앞면 <b>비율</b> → 0.5 (수렴)</div><div id="chartA"></div></div>
+      <div><div class="legend" style="margin-bottom:4px">② 앞면 수 − 절반 · 회색 = ±√n 전형적 폭 (점점 벌어짐)</div><div id="chartB"></div></div>
+    </div>
+    <div id="info2" class="callout v" style="margin-top:12px"></div>
+    <p class="note" style="margin-top:12px">→ <b>도박사 오류</b>: "앞면이 많이 나왔으니 이제 뒷면이 나와 균형을 맞출 차례" — <b>틀렸어요!</b> 핵심 한 줄: <b>비율 − 0.5 = (개수차) ÷ n</b>. 분자(개수차 ②)는 √n 규모로 천천히 커지지만, 분모 n이 훨씬 빨리 커지니 비율(①)은 0.5로 끌려가요. 개수 차이는 0으로 <b>되돌려지지 않아요</b> — 동전은 과거를 기억해 빚을 갚지 않거든요. 비율 수렴 ≠ 개수 보정.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Recap</span>
+    <h2>큰 수의 법칙이 주는 것</h2>
+    <div class="twocol">
+      <div class="callout q"><div class="ttl">표본 → 진실</div><p style="margin:0">충분히 많은 표본의 평균은 모평균으로 수렴. "일부로 전체를 추정"의 근거.</p></div>
+      <div class="callout k" style="background:rgba(251,113,133,.06);border-color:rgba(251,113,133,.25)"><div class="ttl" style="color:var(--k)">≠ 도박사 오류</div><p style="margin:0">수렴하는 건 <b>비율/평균</b>이지 <b>개수</b>가 아니에요. 독립 사건엔 "균형 맞출 차례"가 없어요.</p></div>
+    </div>
+    <div class="callout good" style="margin-top:14px">
+      <p style="margin:0"><b>카지노·보험이 돈 버는 원리</b>가 LLN이에요. 한 판은 운이지만, <b>수백만 판의 평균</b>은 (약간 유리한) 기댓값으로 확실히 수렴하거든요. "많이 반복하면 평균은 배신하지 않는다."</p>
+    </div>
+    <p class="note" style="margin-top:14px;color:var(--faint)">단, LLN은 시행이 <b>서로 독립</b>이고 평균이 존재할 때 성립해요. 위험들이 한꺼번에 터지는 사건(대지진·팬데믹 같은 동시다발 재해)은 독립이 깨져서 보험사도 무너질 수 있어요.</p>
+    <p class="note" style="margin-top:16px">→ LLN은 "어디로 수렴하나"(μ)를 알려줘요. 그럼 "<b>얼마나 빨리, 어떤 모양으로</b> 수렴하나"? 다음 <b>8장 중심극한정리</b>가 그 답 — 표본평균 자체가 정규분포를 이뤄요.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 표본·평균은 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 07 · 큰 수의 법칙');
+VZ.setupStepper();
+
+// ---------- STEP 1 : 어떤 분포든 평균 수렴 ----------
+(function(){
+  // die: 1~6 균등(평균3.5). skew: 80% 1, 20% 6 → 평균 0.8+1.2=2.0
+  const SAMP={ die:()=>1+Math.floor(Math.random()*6), skew:()=>Math.random()<0.8?1:6 };
+  const MEAN={ die:3.5, skew:2.0 };
+  let kind='die', n, sum, hist;
+  function reset(){ n=0; sum=0; hist=[]; render(); info('분포를 고르고 뽑아보세요. 표본평균이 진짜 평균으로 가요.'); }
+  function draw(k){
+    for(let i=0;i<k;i++){ sum+=SAMP[kind](); n++;
+      if(n<=20 || n%Math.max(1,Math.round(n/60))===0 || i===k-1) hist.push([n, sum/n]); }
+    render();
+    info(`<div class="ttl" style="color:var(--q)">${n.toLocaleString()}개 · 표본평균 ${(sum/n).toFixed(3)}</div>
+      <p style="margin:0">진짜 평균 ${MEAN[kind]}과 차이 ${Math.abs(sum/n-MEAN[kind]).toFixed(3)}. ${n>=500?'바짝 붙었죠!':'더 뽑으면 가까워져요.'}</p>`);
+  }
+  function render(){
+    if(hist.length>1) document.getElementById('meanChart').innerHTML =
+      VZ.linePlot([{pts:hist,color:'var(--q)',label:'표본평균'}],{W:540,H:200,xlab:'표본 수',ymin:0,ymax:7,legend:false,hline:{y:MEAN[kind],label:'μ='+MEAN[kind]}});
+    else document.getElementById('meanChart').innerHTML='<div class="legend" style="padding:24px;text-align:center">+50 / +500을 누르면 평균 수렴 곡선이 그려져요.</div>';
+  }
+  function info(m){ document.getElementById('info1').innerHTML=m; }
+  function setKind(k){ kind=k; n=0; sum=0; hist=[];
+    [['dDie','die'],['dSkew','skew']].forEach(([id,kk])=>{ document.getElementById(id).style.cssText = kk===k?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render(); info('분포 바꿈 — 다시 뽑아보세요.');
+  }
+  document.getElementById('dDie').onclick=()=>setKind('die');
+  document.getElementById('dSkew').onclick=()=>setKind('skew');
+  document.getElementById('s1').onclick=()=>draw(1);
+  document.getElementById('s50').onclick=()=>draw(50);
+  document.getElementById('s500').onclick=()=>draw(500);
+  document.getElementById('sreset').onclick=reset;
+  setKind('die');
+})();
+
+// ---------- STEP 2 : 비율 vs 개수 (도박사 오류) ----------
+(function(){
+  let n, heads, hA, hB;
+  function reset(){ n=0; heads=0; hA=[]; hB=[]; render(); info('+100, +1000을 눌러 비율(①)과 개수차(②)를 비교하세요.'); }
+  function flip(k){
+    for(let i=0;i<k;i++){ n++; if(Math.random()<0.5) heads++;
+      if(n<=20 || n%Math.max(1,Math.round(n/50))===0 || i===k-1){ hA.push([n, heads/n]); hB.push([n, heads-n/2]); } }
+    render();
+    info(`<div class="ttl" style="color:var(--v)">${n.toLocaleString()}번 · 앞면 ${heads.toLocaleString()}</div>
+      <p style="margin:0">① 비율 = <b>${(heads/n).toFixed(3)}</b> (0.5에 접근) · ② 개수차 = <b>${(heads-n/2).toFixed(0)}</b> · ±√n 전형적 폭 = ±${Math.sqrt(n).toFixed(0)} (회색 깔때기가 점점 넓어져요)</p>`);
+  }
+  function render(){
+    if(hA.length>1){
+      document.getElementById('chartA').innerHTML = VZ.linePlot([{pts:hA,color:'var(--q)'}],{W:280,H:180,ymin:0,ymax:1,legend:false,hline:{y:0.5,label:'0.5'}});
+      // 깔때기(±√n) — 전형적 벌어짐 폭. 회색 곡선이 좌→우로 벌어지며 "개수차는 줄지 않음"을 눈으로 보여줌.
+      const eHi=hB.map(p=>[p[0], Math.sqrt(p[0])]), eLo=hB.map(p=>[p[0], -Math.sqrt(p[0])]);
+      const env=Math.max(12, Math.sqrt(n)*2.6);
+      document.getElementById('chartB').innerHTML = VZ.linePlot([
+        {pts:eHi,color:'var(--faint)'},{pts:eLo,color:'var(--faint)'},{pts:hB,color:'var(--k)'}
+      ],{W:280,H:180,ymin:-env,ymax:env,legend:false,hline:{y:0,label:'0'}});
+    } else { document.getElementById('chartA').innerHTML=document.getElementById('chartB').innerHTML='<div class="legend" style="padding:20px;text-align:center">+100을 눌러보세요.</div>'; }
+  }
+  function info(m){ document.getElementById('info2').innerHTML=m; }
+  document.getElementById('f100').onclick=()=>flip(100);
+  document.getElementById('f1000').onclick=()=>flip(1000);
+  document.getElementById('freset').onclick=reset;
+  reset();
+})();
+</script>
+</body>
+</html>
