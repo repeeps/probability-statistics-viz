@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>08 중심극한정리 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 3 · Chapter 08</div>
+    <h1>중심극한정리 — 평균은 종모양이 된다</h1>
+    <p class="intro">7장은 "평균이 <b>어디로</b> 수렴하나(μ)"를 말했어요. 8장은 "<b>어떤 모양으로</b> 흩어지나"의 답이에요. 놀랍게도, 원래 분포가 <b>아무리 이상해도</b> — 치우치든, 양봉이든 — 그 <b>표본평균을 여러 번 구하면</b> 그 값들의 분포가 <b>정규분포(종모양)</b>로 다가가요. 이게 <b>중심극한정리(CLT)</b>, 정규분포가 세상 어디에나 있는 이유예요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 무슨 말?</button>
+    <button data-s="1">01 · 모양이 종이 된다</button>
+    <button data-s="2">02 · 폭 = σ/√n</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — What CLT Says</span>
+    <h2>표본평균 자체가 하나의 확률변수</h2>
+    <p class="lead">한 번 표본을 뽑아 평균을 내면 값 하나가 나와요. <b>다시 뽑으면 조금 다른 평균</b>이 나오죠. 이 "표본평균"도 매번 흔들리는 <b>확률변수</b>예요. CLT는 이 표본평균의 <b>분포</b>(여러 번 구했을 때의 히스토그램)에 대한 이야기예요.</p>
+    <div class="callout" style="margin-top:6px">
+      <p style="margin:0 0 8px"><b style="color:var(--q)">정리(말로)</b>: 평균 μ·표준편차 σ인 분포에서 <b>독립</b>으로 n개를 뽑아 평균 X̄를 구하면, n이 충분히 클 때 X̄의 분포는 <b>정규분포 N(μ, σ/√n)</b>에 가까워져요 — <b>원래 분포 모양과 상관없이</b>.</p>
+      <p style="margin:0"><b style="color:var(--hot)">두 가지가 동시에</b>: ① 모양이 <b>종모양</b>으로 ② 중심은 <b>μ</b>, 폭(표준오차)은 <b>σ/√n</b>으로 점점 좁아져요.</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 7장 LLN: 표본평균 하나가 <b>점 μ</b>로 수렴. 8장 CLT: 표본평균의 <b>흩어짐 모양</b>이 종모양. LLN은 "어디로", CLT는 "어떻게".</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Shape Becomes Bell</span>
+    <h2>이상한 분포여도, 평균을 모으면 종모양</h2>
+    <p class="lead">원래 분포를 고르고(특히 <b>양봉</b>처럼 종모양과 정반대인 것!), 표본 크기 <b>n</b>을 키워보세요. 매번 n개를 뽑아 평균 낸 값을 <b>수천 번</b> 모아 히스토그램을 그려요. n이 커질수록 종모양(주황 곡선 = 이론값 N(μ,σ/√n))에 딱 붙어요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <span class="note">원래 분포:</span>
+      <button class="btn" id="pUni">균등(주사위)</button>
+      <button class="btn" id="pSkew" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">치우침</button>
+      <button class="btn" id="pBi" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">양봉(U자)</button>
+    </div>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <span class="note">표본 크기 n:</span>
+      <button class="btn" id="n1">1</button><button class="btn" id="n2">2</button><button class="btn" id="n5">5</button><button class="btn" id="n10">10</button><button class="btn" id="n30">30</button>
+    </div>
+    <div id="info1" class="callout q"></div>
+    <div class="twocol" style="margin-top:10px">
+      <div><div class="legend" style="margin-bottom:4px">① 고정 축 — <b>폭이 좁아지는 것</b>이 보여요</div><div id="cltFixed"></div></div>
+      <div><div class="legend" style="margin-bottom:4px">② 확대 축 — <b>모양이 종이 되는 것</b>이 보여요</div><div id="cltZoom"></div></div>
+    </div>
+    <p class="note" style="margin-top:12px">→ <b>n=1</b>이면 히스토그램은 원래 분포 그대로(양봉은 두 봉우리)라 주황 종모양과 <b>안 맞아요</b>. 그런데 <b>n을 키우면</b> 어떤 모양이든 가운데가 부풀며 종모양으로! ①(고정 축)에선 <b>폭이 좁아지고</b>, ②(확대 축)에선 <b>종모양</b>이 또렷이 보여요.</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">주사위는 값이 띄엄띄엄(이산)이라 작은 n에선 막대 사이가 비어 보여요 — 버그가 아니라 정상이고, n이 커지면 가능한 평균값이 촘촘해져 메워져요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Width is σ/√n</span>
+    <h2>표본을 키우면 폭은 √n으로 좁아진다</h2>
+    <p class="lead">종모양의 <b>폭</b>(표준오차, SE)은 <b>σ/√n</b>이에요. 핵심은 <b>√n</b>: 오차를 <b>절반</b>으로 줄이려면 데이터를 <b>4배</b> 모아야 해요. 처음엔 빨리 좁아지다가 점점 더디게 좁아지죠.</p>
+    <div id="info2" class="callout v"></div>
+    <div class="chart-wrap" id="seChart" style="margin-top:10px"></div>
+    <div class="twocol" style="margin-top:12px">
+      <div class="colbox"><div class="legend">n=1 → SE = σ</div><div class="legend">n=4 → SE = σ/2</div></div>
+      <div class="colbox"><div class="legend">n=16 → SE = σ/4</div><div class="legend">n=100 → SE = σ/10</div></div>
+    </div>
+    <p class="note" style="margin-top:12px">→ "표본을 2배로 늘렸는데 오차가 별로 안 줄었다"는 흔한 실망의 정체가 이 √n이에요. 정밀도엔 <b>수확 체감</b>이 있어요. (자세한 표준오차·표본분포는 9장에서.)</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Recap</span>
+    <h2>왜 정규분포가 어디에나 있나</h2>
+    <div class="twocol">
+      <div class="callout q"><div class="ttl">모양은 종으로</div><p style="margin:0">원래 분포가 무엇이든, 독립인 여러 값의 <b>평균(또는 합)</b>은 정규분포로 다가가요. 키·측정오차·합산값이 종모양인 이유.</p></div>
+      <div class="callout v"><div class="ttl" style="color:var(--v)">폭은 σ/√n</div><p style="margin:0">중심 μ, 표준오차 σ/√n. 데이터를 모을수록 평균은 더 믿을 만해져요(단 √n 속도로).</p></div>
+    </div>
+    <div class="callout good" style="margin-top:14px">
+      <p style="margin:0"><b>추론의 토대</b>가 여기예요. 표본평균이 정규분포라는 걸 알기에, 9~12장에서 "이 평균이 우연히 이만큼 어긋날 확률"을 계산하고 <b>신뢰구간·가설검정</b>을 세울 수 있어요.</p>
+    </div>
+    <p class="note" style="margin-top:16px;color:var(--faint)">단서: CLT는 <b>분산이 유한</b>할 때 성립해요(꼬리가 너무 두꺼운 분포는 예외). 보통 <b>n≥30</b>이면 충분하다지만, 많이 치우친 분포는 더 큰 n이 필요해요. 그리고 CLT가 종모양으로 만드는 건 <b>표본평균</b>이지 <b>개별 값</b>이 아니에요(개별 데이터는 여전히 원래 분포).</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 표본·히스토그램은 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 08 · 중심극한정리');
+VZ.setupStepper();
+const npdf = VZ.ST.normalPdf;
+
+// ---------- STEP 1 : 표본평균의 분포 → 종모양 ----------
+(function(){
+  // 각 모집단: 표본함수 + 진짜 μ,σ (해석적으로 계산)
+  // 균등 주사위: μ=3.5, σ²=35/12 → σ≈1.7078
+  // 치우침 80%→1,20%→6: μ=2.0, σ²=4 → σ=2.0
+  // 양봉 50%→1,50%→6:   μ=3.5, σ²=6.25 → σ=2.5
+  const POP = {
+    uni:  { f:()=>1+Math.floor(Math.random()*6),    mu:3.5, sd:Math.sqrt(35/12), name:'균등(주사위)' },
+    skew: { f:()=>Math.random()<0.8?1:6,            mu:2.0, sd:2.0,             name:'치우침' },
+    bi:   { f:()=>Math.random()<0.5?1:6,            mu:3.5, sd:2.5,             name:'양봉(U자)' },
+  };
+  const REPS=4000;
+  let kind='uni', n=1;
+  function means(){
+    const p=POP[kind], out=new Array(REPS);
+    for(let r=0;r<REPS;r++){ let s=0; for(let i=0;i<n;i++) s+=p.f(); out[r]=s/n; }
+    return out;
+  }
+  function render(){
+    const p=POP[kind], se=p.sd/Math.sqrt(n);
+    const data=means();
+    const ov={ fn:x=>npdf(x,p.mu,se), color:'var(--hot)' };
+    // ① 고정 축(모집단 스케일) → n 커질수록 폭이 좁아지는 게 보임
+    const hf=3.6*p.sd;
+    document.getElementById('cltFixed').innerHTML = VZ.ST.histogram(data,{
+      W:300,H:220,bins:30,min:p.mu-hf,max:p.mu+hf,color:'var(--q)',xlab:'X̄',overlay:ov,aria:'고정 축 표본평균 분포'
+    });
+    // ② 확대 축(μ±3.6·SE) → 좁아진 분포를 키워서 종모양을 또렷이
+    const hz=3.6*se;
+    document.getElementById('cltZoom').innerHTML = VZ.ST.histogram(data,{
+      W:300,H:220,bins:30,min:p.mu-hz,max:p.mu+hz,color:'var(--q)',xlab:'X̄(확대)',overlay:ov,aria:'확대 축 표본평균 분포'
+    });
+    const shape = n===1 ? '아직 원래 분포 그대로 — 주황 종모양과 안 맞죠? n을 키워보세요.' : (n>=10 ? '②(확대)를 보면 종모양 곡선에 딱 붙어요!' : '벌써 가운데가 부풀기 시작해요.');
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--q)">${p.name} · n=${n}</div>
+       <p style="margin:0">진짜 μ=${p.mu} · 표준오차 SE=σ/√n=${p.sd.toFixed(2)}/√${n}=<b>${se.toFixed(3)}</b>. 주황 곡선 = 이론상 N(${p.mu}, ${se.toFixed(2)}). ${shape}</p>`;
+  }
+  function setPop(k){ kind=k;
+    [['pUni','uni'],['pSkew','skew'],['pBi','bi']].forEach(([id,kk])=>{ document.getElementById(id).style.cssText = kk===k?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render();
+  }
+  function setN(v){ n=v;
+    [['n1',1],['n2',2],['n5',5],['n10',10],['n30',30]].forEach(([id,vv])=>{ document.getElementById(id).style.cssText = vv===v?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render();
+  }
+  document.getElementById('pUni').onclick=()=>setPop('uni');
+  document.getElementById('pSkew').onclick=()=>setPop('skew');
+  document.getElementById('pBi').onclick=()=>setPop('bi');
+  document.getElementById('n1').onclick=()=>setN(1);
+  document.getElementById('n2').onclick=()=>setN(2);
+  document.getElementById('n5').onclick=()=>setN(5);
+  document.getElementById('n10').onclick=()=>setN(10);
+  document.getElementById('n30').onclick=()=>setN(30);
+  setPop('bi'); setN(1);   // 가장 극적인 양봉으로 시작
+})();
+
+// ---------- STEP 2 : 표준오차 σ/√n (수확 체감) ----------
+(function(){
+  const sd=2.5;            // 양봉 σ로 구체화
+  const pts=[]; for(let k=1;k<=100;k++) pts.push([k, sd/Math.sqrt(k)]);
+  document.getElementById('seChart').innerHTML = VZ.linePlot(
+    [{pts:pts,color:'var(--v)',label:'SE = σ/√n'}],
+    {W:560,H:220,xlab:'표본 크기 n',ymin:0,ymax:sd*1.05,legend:false,hline:{y:sd/Math.sqrt(4),label:'n=4 → σ/2'}}
+  );
+  const se=k=>(sd/Math.sqrt(k)).toFixed(3);
+  document.getElementById('info2').innerHTML =
+    `<div class="ttl" style="color:var(--v)">σ=${sd}일 때 (양봉 예시)</div>
+     <p style="margin:0">n=1 → SE=<b>${se(1)}</b> · n=4 → <b>${se(4)}</b> · n=16 → <b>${se(16)}</b> · n=100 → <b>${se(100)}</b>. <b>n: 1→4→16</b>처럼 4배 모을 때마다 오차가 정확히 절반.</p>`;
+})();
+</script>
+</body>
+</html>
