@@ -127,7 +127,7 @@
 
   const normalPdf = (x, mu, sd) => Math.exp(-((x - mu) ** 2) / (2 * sd * sd)) / (sd * Math.sqrt(2 * Math.PI));
 
-  // values: 숫자 배열. opts: {W,H, bins, min,max, color, overlay:{fn,color,label}, xlab}
+  // values: 숫자 배열. opts: {W,H, bins, min,max, color, overlay:{fn,color,label}, band:{lo,hi,color,label}, xlab}
   function histogram(values, opts = {}) {
     const W = opts.W || 480, H = opts.H || 240, padL = 36, padR = 14, padT = 14, padB = 30;
     const bins = opts.bins || 24;
@@ -147,6 +147,14 @@
     const py = c => H - padB - (c / maxC) * (H - padT - padB);
     const bw = plotW / bins;
     let g = '';
+    // band: 세로 영역 강조(예: 오차범위, 신뢰구간). {lo,hi,color,label}
+    if (opts.band) {
+      const bl = px(Math.max(lo, opts.band.lo)), bh = px(Math.min(hi, opts.band.hi));
+      g += `<rect x="${bl.toFixed(1)}" y="${padT}" width="${Math.max(0, bh - bl).toFixed(1)}" height="${(H - padT - padB).toFixed(1)}" fill="${opts.band.color || 'var(--v)'}" opacity="0.16"/>`;
+      g += `<line x1="${bl.toFixed(1)}" y1="${padT}" x2="${bl.toFixed(1)}" y2="${H - padB}" stroke="${opts.band.color || 'var(--v)'}" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.7"/>`;
+      g += `<line x1="${bh.toFixed(1)}" y1="${padT}" x2="${bh.toFixed(1)}" y2="${H - padB}" stroke="${opts.band.color || 'var(--v)'}" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.7"/>`;
+      if (opts.band.label) g += `<text class="axislabel" x="${((bl + bh) / 2).toFixed(1)}" y="${padT + 12}" text-anchor="middle" fill="${opts.band.color || 'var(--v)'}">${opts.band.label}</text>`;
+    }
     for (let i = 0; i < bins; i++) {
       const x = padL + i * bw, y = py(cnt[i]);
       g += `<rect x="${(x + 0.5).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${Math.max(0, H - padB - y).toFixed(1)}" rx="1.5" fill="${opts.color || 'var(--q)'}" opacity="0.78"/>`;

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09 표본분포·표준오차 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 3 · Chapter 09</div>
+    <h1>표본분포·표준오차 — 여론조사는 왜 ±3%인가</h1>
+    <p class="intro">표본에서 계산한 값(평균·비율…)은 표본을 다시 뽑으면 조금씩 달라져요. 이렇게 <b>표본통계량이 흔들리는 분포</b>가 <b>표본분포</b>, 그 흔들림의 크기(표준편차)가 <b>표준오차(SE)</b>예요. 여론조사 "지지율 52% (오차범위 ±3%)"의 그 <b>±3%</b>가 바로 표준오차에서 나와요. 추정과 신뢰구간(10~11장)의 직접적 토대예요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 표본분포란</button>
+    <button data-s="1">01 · 여론조사 ±오차</button>
+    <button data-s="2">02 · 표준편차 vs 표준오차</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — Sampling Distribution</span>
+    <h2>"표본에서 잰 값"도 매번 흔들린다</h2>
+    <p class="lead">1000명에게 물어 지지율을 재면 52%가 나올 수 있어요. <b>다른 1000명</b>에게 물으면 51%, 또 다르면 53%… 같은 방법인데도 값이 흔들리죠. 이 "표본에서 잰 값(통계량)"이 만드는 분포가 <b>표본분포</b>예요.</p>
+    <div class="callout" style="margin-top:6px">
+      <p style="margin:0 0 8px"><b style="color:var(--q)">표준오차(SE)</b> = 표본분포의 <b>표준편차</b>. 즉 "표본을 다시 뽑으면 통계량이 <b>평균적으로 이만큼</b> 흔들린다"의 크기예요. SE가 작을수록 한 번의 표본값을 더 믿을 수 있죠.</p>
+      <p style="margin:0"><b style="color:var(--hot)">비율의 표준오차</b>는 SE = √(p(1−p)/n). 8장의 CLT 덕분에 표본분포는 <b>정규분포</b>에 가깝고, 그래서 "±오차범위" 같은 계산이 가능해져요.</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 핵심 구분: <b>표준편차 σ</b>는 "개별 데이터"가 퍼진 정도(안 변함), <b>표준오차 SE</b>는 "표본통계량"이 퍼진 정도(n 커지면 줄어듦). 2단계에서 눈으로 비교해요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Poll Margin</span>
+    <h2>여론조사를 수천 번 돌려보면</h2>
+    <p class="lead">진짜 지지율 <b>p</b>와 표본 크기 <b>n</b>을 정하고, 그 조건의 여론조사를 <b>3000번</b> 반복해 지지율 p̂들을 모아 히스토그램을 그려요. p를 중심으로 폭 SE=√(p(1−p)/n)인 종모양이 돼요. <b>95% 오차범위 = ±1.96·SE</b>(파란 띠).</p>
+    <div class="ctrl"><label>진짜 지지율 p</label><input type="range" id="p" min="30" max="70" value="52"><span class="val" id="pv">52%</span></div>
+    <div class="row" style="gap:8px;margin:8px 0">
+      <span class="note">표본 크기 n:</span>
+      <button class="btn" id="n100">100명</button><button class="btn" id="n400">400명</button><button class="btn" id="n1000">1000명</button><button class="btn" id="n3000">3000명</button>
+    </div>
+    <div id="info1" class="callout q"></div>
+    <div class="chart-wrap" id="pollChart" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ <b>n=1000일 때 ±3%</b> 부근이죠? 전국 여론조사 표본이 보통 1000명 안팎인 이유예요. n을 4배(100→400)로 키우면 오차범위는 절반으로 — 또 그 <b>√n</b> 법칙이에요.</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">작은 n(100)에선 p̂=(찬성수)/n이 띄엄띄엄한 값이라 막대가 들쭉날쭉 보여요 — 버그가 아니라 정상이에요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — σ vs SE</span>
+    <h2>데이터의 퍼짐 ≠ 통계량의 퍼짐</h2>
+    <p class="lead">가장 헷갈리는 둘을 분리해요. <b>표준편차 σ</b>(개별 응답의 퍼짐)는 표본을 키워도 <b>그대로</b>예요. 반면 <b>표준오차 SE</b>(지지율 추정값의 퍼짐)는 n이 커지면 <b>√n으로 줄어들어요</b>. 아래에서 n을 키워보세요.</p>
+    <p class="note" style="margin-top:-4px">사실 <b>비율은 0/1 응답의 평균</b>이에요. 그래서 응답 하나의 σ=√(p(1−p))이고, 지지율의 SE=σ/√n — <b>8장의 평균과 똑같은 공식</b>이죠(p=0.5면 σ=0.5).</p>
+    <div id="info2" class="callout v"></div>
+    <div class="chart-wrap" id="sevsChart" style="margin-top:10px"></div>
+    <div class="twocol" style="margin-top:12px">
+      <div class="colbox"><div class="ttl" style="color:var(--muted)">표준편차 σ</div><p class="legend" style="margin:0">개별 데이터가 흩어진 폭. 모집단 성질이라 n과 무관하게 일정. "사람마다 다르다"의 크기.</p></div>
+      <div class="colbox"><div class="ttl" style="color:var(--v)">표준오차 SE</div><p class="legend" style="margin:0">추정값(평균·비율)이 흔들리는 폭 = σ/√n. n을 키우면 줄어듦. "추정이 얼마나 정밀한가"의 크기.</p></div>
+    </div>
+    <p class="note" style="margin-top:12px;color:var(--faint)">현실에선 진짜 σ(또는 p)를 모르므로, 표본에서 구한 <b>표본표준편차 s</b>(또는 p̂)로 SE를 추정해요. 그래서 실제 보고되는 오차범위도 사실은 "추정된 오차범위"예요(작은 n에선 t분포로 보정 — 11장).</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Recap</span>
+    <h2>한 번의 표본으로 진실을 가두기</h2>
+    <div class="twocol">
+      <div class="callout q"><div class="ttl">표본분포 = 통계량의 분포</div><p style="margin:0">표본을 다시 뽑을 때 통계량이 흔들리는 분포. 그 표준편차가 <b>표준오차</b>.</p></div>
+      <div class="callout v"><div class="ttl" style="color:var(--v)">SE로 정밀도를 잰다</div><p style="margin:0">비율은 √(p(1−p)/n), 평균은 σ/√n. n↑ → SE↓ (√n 속도). 오차범위 ≈ ±1.96·SE(95%).</p></div>
+    </div>
+    <div class="callout good" style="margin-top:14px">
+      <p style="margin:0">우리는 보통 표본을 <b>딱 한 번</b> 뽑아요. 하지만 그 한 번의 값이 <b>어떤 표본분포에서 나왔는지</b>(중심 어디, SE 얼마)를 알면, "진짜 값은 p̂ ± 오차범위 안에 있을 것"이라고 <b>거꾸로 추정</b>할 수 있어요. 그게 다음 <b>10장 추정 · 11장 신뢰구간</b>이에요.</p>
+    </div>
+    <p class="note" style="margin-top:16px;color:var(--faint)">단서: 이 모든 게 표본이 <b>무작위·독립</b>으로 뽑혔다는 가정 위에 서요. 편향된 표집(특정 집단만 응답)은 n을 아무리 키워도 SE만 줄 뿐 <b>틀린 중심</b>으로 정밀하게 수렴해요 — 14장의 함정.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 표본·오차는 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 09 · 표본분포·표준오차');
+VZ.setupStepper();
+const npdf = VZ.ST.normalPdf;
+
+// ---------- STEP 1 : 여론조사 표본분포 ----------
+(function(){
+  const REPS=3000;
+  let p=0.52, n=1000;
+  function polls(){
+    const out=new Array(REPS);
+    for(let r=0;r<REPS;r++){ let s=0; for(let i=0;i<n;i++) if(Math.random()<p) s++; out[r]=s/n; }
+    return out;
+  }
+  function render(){
+    const se=Math.sqrt(p*(1-p)/n), moe=1.96*se;
+    const half=0.16;                       // 비율 단위 고정 축 → n 커질수록 좁아지는 게 보임
+    const lo=Math.max(0,p-half), hi=Math.min(1,p+half);
+    const data=polls();
+    const spike = n>=3000 ? ' (n이 크니 SE가 작아 종이 가느다란 못처럼 좁아졌죠 — 그게 정밀해졌다는 뜻!)' : '';
+    document.getElementById('pollChart').innerHTML = VZ.ST.histogram(data,{
+      W:560,H:240,bins:40,min:lo,max:hi,color:'var(--q)',xlab:'표본 지지율 p̂',
+      overlay:{ fn:x=>npdf(x,p,se), color:'var(--hot)' },
+      band:{ lo:p-moe, hi:p+moe, color:'var(--v)', label:'±1.96·SE (95%)' }, aria:'표본 지지율의 분포와 95% 오차범위'
+    });
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--q)">p=${(p*100).toFixed(0)}% · n=${n.toLocaleString()}명</div>
+       <p style="margin:0 0 6px">표준오차 SE=√(p(1−p)/n)=<b>${(se*100).toFixed(2)}%p</b> · 95% 오차범위 ±1.96·SE=<b>±${(moe*100).toFixed(1)}%p</b> (파란 띠). 정규근사가 좋은 n이라 1.96이 곧 95%예요.</p>
+       <p style="margin:0;color:var(--faint)">읽는 법: <b>이 장</b>은 "여러 번 조사하면 p̂의 95%가 진짜 p ±${(moe*100).toFixed(1)}%p 안에 든다"예요. 실제론 조사를 <b>한 번</b>만 하니, 그 p̂ 하나로 진짜 p를 거꾸로 가두는 게 11장 신뢰구간이에요.${spike}</p>`;
+  }
+  function setN(v){ n=v;
+    [['n100',100],['n400',400],['n1000',1000],['n3000',3000]].forEach(([id,vv])=>{ document.getElementById(id).style.cssText = vv===v?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render();
+  }
+  // 슬라이더는 드래그 중 매 픽셀마다 발화 → n이 크면 9M 추첨이 끊길 수 있어 디바운스
+  let timer=null;
+  document.getElementById('p').oninput=e=>{ p=+e.target.value/100; document.getElementById('pv').textContent=(p*100).toFixed(0)+'%';
+    if(timer) clearTimeout(timer); timer=setTimeout(render, 60); };
+  document.getElementById('n100').onclick=()=>setN(100);
+  document.getElementById('n400').onclick=()=>setN(400);
+  document.getElementById('n1000').onclick=()=>setN(1000);
+  document.getElementById('n3000').onclick=()=>setN(3000);
+  setN(1000);
+})();
+
+// ---------- STEP 2 : 표준편차(σ) vs 표준오차(SE) ----------
+(function(){
+  const p=0.5, sigma=Math.sqrt(p*(1-p));     // 베르누이 모집단 표준편차 = 0.5 (n과 무관)
+  const sigLine=[], sePts=[];
+  for(let k=1;k<=2000;k++){ sigLine.push([k, sigma]); sePts.push([k, sigma/Math.sqrt(k)]); }
+  document.getElementById('sevsChart').innerHTML = VZ.linePlot(
+    [{pts:sigLine,color:'var(--muted)',label:'σ (데이터 퍼짐, 일정)'},
+     {pts:sePts,color:'var(--v)',label:'SE (통계량 퍼짐, ↓)'}],
+    {W:560,H:220,xlab:'표본 크기 n',ymin:0,ymax:sigma*1.08,legend:true,aria:'σ와 SE 비교'}
+  );
+  const se=k=>(sigma/Math.sqrt(k)).toFixed(3);
+  document.getElementById('info2').innerHTML =
+    `<div class="ttl" style="color:var(--v)">p=0.5일 때 (σ=0.5 고정)</div>
+     <p style="margin:0">σ는 n=100이든 2000이든 <b>0.5 그대로</b>. SE는 n=100 → <b>${se(100)}</b>, n=2000 → <b>${se(2000)}</b>로 줄어들죠. 회색선(σ)은 평평, 보라선(SE)은 √n으로 내려가요.</p>`;
+})();
+</script>
+</body>
+</html>
