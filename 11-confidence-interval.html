@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11 신뢰구간 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+  .wrongbox{border-left:3px solid var(--k); padding:8px 12px; margin:6px 0; background:rgba(251,113,133,.05); border-radius:0 8px 8px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 4 · Chapter 11</div>
+    <h1>신뢰구간 — "이 범위 안에 있다"고 말하는 법</h1>
+    <p class="intro">점추정은 거의 항상 조금 빗나가요(10장). 그래서 정직한 추정은 한 점이 아니라 <b>구간</b>으로 말해요: "진짜 값은 <b>이 범위</b> 안에 있을 것, <b>95% 확신</b>." 그런데 이 "95%"가 통계에서 <b>가장 많이 오해받는</b> 숫자예요. 그 진짜 의미를 눈으로 봐요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 구간으로 추정</button>
+    <button data-s="1">01 · 95%의 진짜 의미</button>
+    <button data-s="2">02 · 확신 ↔ 폭</button>
+    <button data-s="3">03 · 오해 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — Interval Estimate</span>
+    <h2>점추정 ± 오차범위 = 신뢰구간</h2>
+    <p class="lead">표본에서 p̂를 구하면(9장), 그 둘레로 <b>표준오차 SE</b>만큼 여유를 둔 구간을 만들어요. 95% 신뢰구간은 보통 <b>p̂ ± 1.96·SE</b>예요. "지지율 52%, 95% 신뢰구간 [49%, 55%]"처럼요.</p>
+    <div class="callout" style="margin-top:6px">
+      <p style="margin:0 0 8px"><b style="color:var(--q)">왜 1.96인가</b>: CLT(8장) 덕분에 표본통계량은 정규분포를 따르고, 정규분포는 중심 ±1.96σ 안에 <b>95%</b>가 들어와요(6장). 그 폭을 그대로 빌려 쓰는 거예요.</p>
+      <p style="margin:0"><b style="color:var(--hot)">구간은 표본에서 나와요</b>: 우리는 진짜 값을 모르니, <b>한 번 뽑은 표본</b>으로 구간을 만들어 진짜 값을 "가두려" 시도하는 거예요.</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 그럼 "95% 신뢰"는 정확히 무슨 뜻일까요? "이 구간 안에 진짜 값이 95% 확률로 있다"가 <b>아니에요</b>. 다음 단계에서 진짜 의미를 봅니다.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — What 95% Means</span>
+    <h2>구간 100개를 만들어 보면</h2>
+    <p class="lead">진짜 지지율(빨간 세로선)을 우리가 알고 있다고 치고, 같은 조사(n=300)를 <b>100번</b> 반복해 매번 신뢰구간을 그어요. 각 가로선이 한 번의 조사 구간이에요. 빨간선을 <b>가로지르면 성공(초록)</b>, <b>놓치면 실패(빨강)</b>.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <span class="note">신뢰수준:</span>
+      <button class="btn" id="c90" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">90%</button>
+      <button class="btn" id="c95">95%</button>
+      <button class="btn" id="c99" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">99%</button>
+      <button class="btn" id="reroll" style="border-color:var(--q)">↻ 다시 100번</button>
+    </div>
+    <div id="info1" class="callout q"></div>
+    <div class="chart-wrap" id="ciChart" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 핵심: <b>95%는 "구간을 만드는 방법"의 성공률</b>이에요. "구간을 무한히 많이 만들면 그중 95%가 진짜 값을 담는다." 이미 만들어진 <b>특정</b> 구간 하나는 진짜를 담았거나(100%) 못 담았거나(0%)지, "95% 확률"이 아니에요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Confidence vs Width</span>
+    <h2>더 확신하려면 더 넓어진다</h2>
+    <p class="lead">공짜 점심은 없어요. <b>더 높은 신뢰수준</b>(99%)은 진짜를 놓칠 확률을 줄이는 대신 구간이 <b>더 넓어져요</b>(덜 정밀). 반대로 좁히려면 확신을 낮추거나(90%) <b>표본 n을 키워야</b> 해요. 아래는 신뢰수준별 구간 반폭(±)이 n에 따라 줄어드는 모습이에요.</p>
+    <div id="info2" class="callout v"></div>
+    <div class="chart-wrap" id="widthChart" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 폭을 절반으로 줄이려면 n을 <b>4배</b>로 — 또 √n. 그래서 현실의 조사는 "충분히 좁으면서 감당 가능한 n"으로 95%를 표준처럼 써요(확신과 정밀의 타협점).</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Misreadings</span>
+    <h2>흔한 오해 4가지</h2>
+    <div class="wrongbox"><b style="color:var(--k)">✗ "이 구간에 진짜 값이 95% 확률로 있다."</b><br><span class="legend">진짜 값은 고정된 상수예요. 이미 만든 구간은 담았거나 아니거나 둘 중 하나. 95%는 <b>방법의 장기 성공률</b>이에요.</span></div>
+    <div class="wrongbox"><b style="color:var(--k)">✗ "표본의 95%가 이 구간 안에 든다."</b><br><span class="legend">구간은 <b>모수</b>(진짜 평균·비율)에 관한 거지, 개별 데이터의 95%를 담는 범위가 아니에요.</span></div>
+    <div class="wrongbox"><b style="color:var(--k)">✗ "95% 구간이 99% 구간보다 좋다."</b><br><span class="legend">더 좁을 뿐, 더 낫진 않아요. 신뢰수준↑ → 폭↑ → 놓칠 확률↓. 목적에 따라 고르는 거예요.</span></div>
+    <div class="wrongbox"><b style="color:var(--k)">✗ "구간이 겹치면 차이가 없다 / 안 겹치면 있다."</b><br><span class="legend">겹침 여부로 차이를 판정하는 건 부정확해요 — 그건 다음 12장 가설검정의 일.</span></div>
+    <div class="callout good" style="margin-top:14px">
+      <p style="margin:0"><b>신뢰구간과 가설검정은 동전의 양면</b>이에요. "95% 구간이 어떤 값을 포함하지 않는다"는 "그 값을 5% 수준에서 기각한다"와 같아요. 다음 <b>12장</b>에서 p-value로 이 판단을 정식화해요.</p>
+    </div>
+    <p class="note" style="margin-top:16px;color:var(--faint)">단서: 이 구간들은 표본이 <b>무작위·독립</b>이고 n이 충분해 정규근사가 맞다는 가정 위에 서요. p가 0이나 1에 가깝거나 n이 작으면 단순한 p̂±1.96·SE 공식은 실제보다 <b>좁게</b> 나와 신뢰수준에 못 미쳐요(더 정교한 구간이 필요). 그리고 편향된 표집이면 구간이 아무리 좁아도 진짜 값을 비껴가요(14장).</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 구간·시뮬은 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 11 · 신뢰구간');
+VZ.setupStepper();
+
+// ---------- STEP 1 : 60개 구간으로 보는 "95%의 의미" ----------
+(function(){
+  const Z={90:1.645,95:1.96,99:2.576};
+  const P=0.52, n=300, M=100;     // 진짜 지지율, 표본 크기, 구간 개수
+  let level=95, samples=null;
+  function drawSamples(){ samples=new Array(M);
+    for(let r=0;r<M;r++){ let s=0; for(let i=0;i<n;i++) if(Math.random()<P) s++; samples[r]=s/n; }
+  }
+  function render(){
+    const z=Z[level];
+    const W=560,H=360,padL=14,padR=14,padT=10,padB=24;
+    const lo=P-0.16, hi=P+0.16, plotW=W-padL-padR;
+    const clamp=x=>Math.max(lo,Math.min(hi,x));
+    const px=x=>padL+(clamp(x)-lo)/(hi-lo)*plotW;     // 창 밖으로 새지 않게 클램프
+    const rowH=(H-padT-padB)/M;
+    let g='', hit=0;
+    samples.forEach((ph,i)=>{
+      const se=Math.sqrt(ph*(1-ph)/n), a=ph-z*se, b=ph+z*se;
+      const contains = (P>=a && P<=b); if(contains) hit++;
+      const col = contains?'var(--good)':'var(--k)';
+      const y=(padT+i*rowH+rowH/2).toFixed(1);
+      g+=`<line x1="${px(a).toFixed(1)}" y1="${y}" x2="${px(b).toFixed(1)}" y2="${y}" stroke="${col}" stroke-width="1.6" opacity="${contains?0.5:0.95}"/>`;
+      g+=`<circle cx="${px(ph).toFixed(1)}" cy="${y}" r="1.6" fill="${col}"/>`;
+    });
+    // 진짜 값 세로선
+    g+=`<line x1="${px(P).toFixed(1)}" y1="${padT}" x2="${px(P).toFixed(1)}" y2="${H-padB}" stroke="var(--hot)" stroke-width="2"/>`;
+    g+=`<text x="${px(P).toFixed(1)}" y="${H-8}" text-anchor="middle" class="axislabel" fill="var(--hot)">진짜 p=${(P*100).toFixed(0)}%</text>`;
+    g+=`<text x="${padL}" y="${H-8}" text-anchor="start" class="axislabel">${((lo)*100).toFixed(0)}%</text>`;
+    g+=`<text x="${W-padR}" y="${H-8}" text-anchor="end" class="axislabel">${((hi)*100).toFixed(0)}%</text>`;
+    document.getElementById('ciChart').innerHTML =
+      `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="60개 신뢰구간" style="max-width:100%;display:block">${g}</svg>`;
+    const miss=M-hit;
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--q)">${level}% 신뢰구간 · ${M}번 반복</div>
+       <p style="margin:0 0 6px">진짜 값을 <b style="color:var(--good)">포함 ${hit}개</b> · <b style="color:var(--k)">놓침 ${miss}개</b> (${(100*hit/M).toFixed(0)}%). 기대값은 약 ${level}%가 성공 — 빨강(실패) 구간도 "잘못 만든" 게 아니라, 방법이 원래 ${100-level}%는 놓치도록 설계된 거예요.</p>
+       <p style="margin:0;color:var(--faint)">이 ${M}번의 비율 자체도 표본이라 매번 흔들려요 — <b>↻ 다시</b>를 눌러 ${level}% 근처에서 출렁이는 걸 확인해보세요.</p>`;
+  }
+  function setLevel(l){ level=l;
+    [['c90',90],['c95',95],['c99',99]].forEach(([id,ll])=>{ document.getElementById(id).style.cssText = ll===l?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render();
+  }
+  document.getElementById('c90').onclick=()=>setLevel(90);
+  document.getElementById('c95').onclick=()=>setLevel(95);
+  document.getElementById('c99').onclick=()=>setLevel(99);
+  document.getElementById('reroll').onclick=()=>{ drawSamples(); render(); };
+  drawSamples(); setLevel(95);
+})();
+
+// ---------- STEP 2 : 신뢰수준 vs 폭(반폭) vs n ----------
+(function(){
+  const Z={90:1.645,95:1.96,99:2.576}, p=0.5;
+  const series=[[99,'var(--k)'],[95,'var(--v)'],[90,'var(--q)']].map(([lv,c])=>{
+    const pts=[]; for(let k=50;k<=2000;k+=10) pts.push([k, Z[lv]*Math.sqrt(p*(1-p)/k)]);
+    return {pts, color:c, label:lv+'% 반폭 ±'};
+  });
+  document.getElementById('widthChart').innerHTML = VZ.linePlot(series,
+    {W:560,H:220,xlab:'표본 크기 n',ymin:0,ymax:Z[99]*Math.sqrt(0.25/50)*1.05,legend:true,aria:'신뢰수준별 구간 반폭'}
+  );
+  const hw=(lv,k)=>(Z[lv]*Math.sqrt(p*(1-p)/k)*100).toFixed(1);
+  document.getElementById('info2').innerHTML =
+    `<div class="ttl" style="color:var(--v)">n=1000일 때 반폭 ±(p=0.5, 가장 넓은 경우)</div>
+     <p style="margin:0">90% → ±<b>${hw(90,1000)}%p</b> · 95% → ±<b>${hw(95,1000)}%p</b> · 99% → ±<b>${hw(99,1000)}%p</b>. p=0.5는 분산이 최대라 구간이 가장 넓어요(보수적). 같은 데이터라도 더 확신할수록 넓어지고, 셋 다 n이 커지면 함께 좁아져요.</p>`;
+})();
+</script>
+</body>
+</html>
