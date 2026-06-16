@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13 상관·회귀 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 5 · Chapter 13</div>
+    <h1>상관·회귀 — 함께 움직이면, 원인일까?</h1>
+    <p class="intro">두 가지가 <b>함께 변하는</b> 정도를 한 숫자로 잰 게 <b>상관계수 r</b>(−1~+1)이고, 그 관계를 직선으로 그어 예측하는 게 <b>회귀</b>예요. 강력하지만 함정투성이: r은 <b>직선 관계만</b> 보고, 이상치 하나에 흔들리고, 무엇보다 <b>상관은 인과가 아니에요</b>. 2장에서 미뤄둔 그 이야기를 마무리해요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 상관계수 r</button>
+    <button data-s="1">01 · r 갖고 놀기</button>
+    <button data-s="2">02 · r의 함정</button>
+    <button data-s="3">03 · 상관 ≠ 인과</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — Correlation r</span>
+    <h2>두 변수가 함께 움직이는 정도</h2>
+    <p class="lead">공부시간이 늘면 점수도 느는 경향이 있죠. 이렇게 <b>한쪽이 커질 때 다른 쪽도 커지면 양(+)</b>, 반대면 음(−)의 상관이에요. <b>상관계수 r</b>은 그 <b>직선적</b> 관계의 방향과 강도를 −1에서 +1 사이 한 숫자로 압축해요.</p>
+    <div class="callout" style="margin-top:6px">
+      <p style="margin:0 0 8px"><b style="color:var(--q)">r 읽는 법</b>: <b>부호</b>는 방향(+ 같이 증가 / − 반대), <b>절댓값</b>은 직선 관계의 강도. r=±1이면 점들이 완벽히 직선 위, r=0이면 직선적 관계가 없음.</p>
+      <p style="margin:0"><b style="color:var(--hot)">결정적 주의</b>: r=0은 "<b>관계 없음</b>"이 아니라 "<b>직선 관계 없음</b>"이에요. U자처럼 강하게 휘어진 관계도 r은 0에 가까울 수 있어요(2단계).</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ <b>회귀선</b>은 점들을 가장 잘 지나가는 직선(예측선)이에요. "공부 1시간 더 = 점수 몇 점 더"처럼 관계를 수치로 요약하고 예측에 써요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Play with r</span>
+    <h2>상관계수를 손으로 움직여 보기</h2>
+    <p class="lead">목표 상관 r을 슬라이더로 정하면, 그 정도로 함께 움직이는 가상 데이터(공부시간 vs 점수)를 흩뿌려요. 주황 <b>회귀선</b>과 실제 <b>표본 상관 r</b>도 같이 계산돼요. ±1로 갈수록 점들이 직선에 모이고, 0이면 구름처럼 퍼지죠.</p>
+    <div class="ctrl"><label>목표 상관 r</label><input type="range" id="r" min="-100" max="100" value="70"><span class="val" id="rv">+0.70</span></div>
+    <div class="row" style="gap:8px;margin:8px 0">
+      <button class="btn" id="reroll" style="border-color:var(--q)">↻ 새 표본</button>
+    </div>
+    <div id="info1" class="callout q"></div>
+    <div class="chart-wrap" id="scatter1" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 같은 목표 r이라도 <b>표본마다 점 배치가 달라요</b>(새 표본을 눌러보세요). 표본 상관은 진짜 상관 둘레에서 흔들려요 — 작은 표본일수록 더. 회귀선 기울기 = r × (점수 퍼짐 ÷ 시간 퍼짐).</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Traps of r</span>
+    <h2>같은 숫자, 전혀 다른 그림</h2>
+    <p class="lead">r 하나만 믿으면 속아요. <b>반드시 산점도를 그려</b> 봐야 해요. 세 가지 함정을 눌러 보세요 — 그림을 안 보면 절대 모를 것들이에요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="tCurve">곡선 관계 (r≈0인데 강함)</button>
+      <button class="btn" id="tOut" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">이상치 하나</button>
+      <button class="btn" id="tCluster" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">숨은 그룹</button>
+    </div>
+    <div id="info2" class="callout v"></div>
+    <div class="chart-wrap" id="scatter2" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ r은 요약일 뿐, 모양을 알려주지 않아요. <b>곡선</b>(r≈0이어도 완벽한 관계), <b>이상치 하나</b>가 r을 통째로 만들거나 지우기, 서로 다른 <b>그룹</b>이 섞여 가짜 추세를 만들기(다음 14장 심슨의 역설). 숫자 전에 <b>그림</b>.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Correlation ≠ Causation</span>
+    <h2>함께 움직인다고 원인은 아니다</h2>
+    <p class="lead">"아이스크림 판매량과 익사 사고가 함께 증가한다." 아이스크림이 익사를 일으킬까요? 아니에요 — <b>여름(더위)</b>이 둘 다 끌어올린 거죠. 상관이 보여도, 원인일 이유는 <b>네 가지나</b> 다른 게 있어요:</p>
+    <div class="twocol" style="margin-top:8px">
+      <div class="colbox"><div class="ttl" style="color:var(--k)">① 우연의 일치</div><p class="legend" style="margin:0">변수를 충분히 많이 뒤지면 아무 인과 없이도 높은 상관이 우연히 나와요(많은 검정 = p-해킹의 사촌).</p></div>
+      <div class="colbox"><div class="ttl" style="color:var(--k)">② 역인과</div><p class="legend" style="margin:0">A→B가 아니라 B→A일 수도. "운동하면 건강? 사실 건강한 사람이 운동하는 것"일 수도.</p></div>
+      <div class="colbox"><div class="ttl" style="color:var(--k)">③ 교란변수</div><p class="legend" style="margin:0">숨은 제3의 원인(여름)이 둘(아이스크림·익사)을 동시에 움직여 가짜 상관을 만들어요.</p></div>
+      <div class="colbox"><div class="ttl" style="color:var(--k)">④ 선택편향</div><p class="legend" style="margin:0">표본을 고르는 방식이 없던 상관을 만들기도. 예: 병원에 온 사람만 보면 두 병이 음의 상관처럼 보여요(둘 다 없는 사람은 안 와서).</p></div>
+    </div>
+    <div class="callout good" style="margin-top:14px">
+      <p style="margin:0">인과를 주장하려면 상관만으론 부족해요. <b>무작위 대조 실험</b>(원인을 무작위로 배정)이나 교란변수를 통제한 분석이 필요하죠. 회귀선은 <b>예측</b>엔 훌륭하지만, 그 자체로 <b>원인을 증명하지 않아요</b>.</p>
+    </div>
+    <p class="note" style="margin-top:16px;color:var(--faint)">→ 마지막 <b>14장</b>에서 이 함정들(상관≠인과·심슨의 역설·평균으로의 회귀·생존자 편향)을 한데 모아, 통계를 의심하는 법으로 마무리해요.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 점·상관·회귀선은 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 13 · 상관·회귀');
+VZ.setupStepper();
+
+function gauss(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+function pearson(pts){ const n=pts.length; let mx=0,my=0; pts.forEach(p=>{mx+=p[0];my+=p[1];}); mx/=n; my/=n;
+  let sxy=0,sx=0,sy=0; pts.forEach(p=>{ sxy+=(p[0]-mx)*(p[1]-my); sx+=(p[0]-mx)**2; sy+=(p[1]-my)**2; });
+  return { r: sx&&sy?sxy/Math.sqrt(sx*sy):0, mx, my, slope: sx?sxy/sx:0 }; }
+
+let clipId=0;
+function scatter(pts, o){
+  const W=o.W||560,H=o.H||300,padL=42,padR=16,padT=14,padB=34;
+  const cid='clp'+(clipId++);
+  const px=x=>padL+(x-o.xlo)/(o.xhi-o.xlo)*(W-padL-padR);
+  const py=y=>H-padB-(y-o.ylo)/(o.yhi-o.ylo)*(H-padT-padB);
+  let g=`<clipPath id="${cid}"><rect x="${padL}" y="${padT}" width="${W-padL-padR}" height="${H-padT-padB}"/></clipPath>`;
+  g+=`<line class="axis" x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}"/>`;
+  g+=`<line class="axis" x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}"/>`;
+  g+=`<g clip-path="url(#${cid})">`;
+  if(o.line){ const {slope,b}=o.line;
+    g+=`<line x1="${px(o.xlo).toFixed(1)}" y1="${py(slope*o.xlo+b).toFixed(1)}" x2="${px(o.xhi).toFixed(1)}" y2="${py(slope*o.xhi+b).toFixed(1)}" stroke="var(--hot)" stroke-width="2.5"/>`; }
+  pts.forEach(p=>{ const col=p[2]||'var(--q)'; g+=`<circle cx="${px(p[0]).toFixed(1)}" cy="${py(p[1]).toFixed(1)}" r="3.4" fill="${col}" opacity="0.72"/>`; });
+  g+=`</g>`;
+  if(o.xlab) g+=`<text class="axislabel" x="${(padL+W-padR)/2}" y="${H-8}" text-anchor="middle">${o.xlab}</text>`;
+  if(o.ylab) g+=`<text class="axislabel" x="14" y="${(padT+H-padB)/2}" text-anchor="middle" transform="rotate(-90 14 ${(padT+H-padB)/2})">${o.ylab}</text>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.aria||'산점도'}" style="max-width:100%;display:block">${g}</svg>`;
+}
+
+// ---------- STEP 1 : r 갖고 놀기 ----------
+(function(){
+  let r=0.70, pts=null;
+  const XLO=0,XHI=11,YLO=38,YHI=106;
+  function gen(){ pts=[]; for(let i=0;i<60;i++){ const zx=gauss(), zy=r*zx+Math.sqrt(1-r*r)*gauss();
+    pts.push([5+1.7*zx, 72+11*zy]); } }
+  function render(){
+    const s=pearson(pts), b=s.my-s.slope*s.mx;
+    document.getElementById('scatter1').innerHTML = scatter(pts,
+      {xlo:XLO,xhi:XHI,ylo:YLO,yhi:YHI,line:{slope:s.slope,b},xlab:'공부시간(h)',ylab:'점수',aria:'공부시간 대 점수 산점도'});
+    const sign=s.r>=0?'+':'';
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--q)">목표 r=${r>=0?'+':''}${r.toFixed(2)} · 표본 r=${sign}${s.r.toFixed(2)}</div>
+       <p style="margin:0">${Math.abs(s.r)>0.8?'점들이 직선에 바짝 붙어요(강한 상관).':Math.abs(s.r)>0.4?'느슨하지만 분명한 추세가 보여요.':Math.abs(s.r)<0.15?'거의 구름 — 직선 관계가 약해요.':'약한 추세.'} 회귀선 기울기 ≈ ${s.slope.toFixed(1)}점/시간.</p>`;
+  }
+  document.getElementById('r').oninput=e=>{ r=+e.target.value/100; document.getElementById('rv').textContent=(r>=0?'+':'')+r.toFixed(2); gen(); render(); };
+  document.getElementById('reroll').onclick=()=>{ gen(); render(); };
+  gen(); render();
+})();
+
+// ---------- STEP 2 : r의 함정 ----------
+(function(){
+  const XLO=-0.5,XHI=10.5;
+  function build(key){
+    let pts=[], ylo=0, yhi=10, msg='', line=null, ylab='y', xlab='x';
+    if(key==='tCurve'){
+      ylo=-1; yhi=26;
+      for(let i=0;i<70;i++){ const x=0.3+9.4*Math.random(); const y=(x-5)*(x-5)+ (gauss()*1.2); pts.push([x,y]); }
+      const s=pearson(pts); line={slope:s.slope,b:s.my-s.slope*s.mx};
+      msg=`완벽한 U자 관계인데 표본 r=${(s.r>=0?'+':'')+s.r.toFixed(2)} (${Math.abs(s.r)<0.18?'거의 0':'여전히 작죠'}). r은 직선만 보니까 휘어진 관계를 놓쳐요. 주황 직선이 얼마나 무의미한지 보세요.`;
+    } else if(key==='tOut'){
+      ylo=-1; yhi=12;
+      for(let i=0;i<40;i++){ pts.push([1.5+2*Math.random(), 5+gauss()*1.1]); }   // 무상관 덩어리
+      const s0=pearson(pts);
+      pts.push([9.7, 10.5]);                                                       // 이상치 하나
+      const s=pearson(pts); line={slope:s.slope,b:s.my-s.slope*s.mx};
+      msg=`왼쪽 덩어리만 보면 무상관(r≈${(s0.r).toFixed(2)})인데, <b>오른쪽 위 점 하나</b>를 더하니 표본 r=${(s.r>=0?'+':'')+s.r.toFixed(2)}로 치솟아요. 이상치 하나가 상관을 통째로 만들어요.`;
+    } else {
+      ylo=38; yhi=104; xlab='공부시간(h)'; ylab='점수';
+      // 숨은 두 그룹: 각 그룹은 양의 관계지만, 그룹 위치 차이가 전체 음의 추세를 만듦(심슨 맛보기)
+      for(let i=0;i<35;i++){ const x=1+2*Math.random(); pts.push([x, 85+3*x+gauss()*3, 'var(--q)']); }
+      for(let i=0;i<35;i++){ const x=6+3*Math.random(); pts.push([x, 50+3*x+gauss()*3, 'var(--pink)']); }
+      const s=pearson(pts); line={slope:s.slope,b:s.my-s.slope*s.mx};
+      msg=`전체로 보면 표본 r=${(s.r>=0?'+':'')+s.r.toFixed(2)}(음의 추세, 주황선)인데, <b>색깔별 그룹</b> 안에선 둘 다 양의 관계예요! 섞인 그룹이 추세를 뒤집어요 — 14장 심슨의 역설.`;
+    }
+    document.getElementById('scatter2').innerHTML = scatter(pts,{xlo:XLO,xhi:XHI,ylo,yhi,line,xlab,ylab,aria:'함정 산점도'});
+    document.getElementById('info2').innerHTML = `<p style="margin:0">${msg}</p>`;
+  }
+  function setK(key){ [['tCurve'],['tOut'],['tCluster']].forEach(([id])=>{ document.getElementById(id).style.cssText = id===key?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; }); build(key); }
+  document.getElementById('tCurve').onclick=()=>setK('tCurve');
+  document.getElementById('tOut').onclick=()=>setK('tOut');
+  document.getElementById('tCluster').onclick=()=>setK('tCluster');
+  setK('tCurve');
+})();
+</script>
+</body>
+</html>

@@ -166,7 +166,7 @@ VZ.setupStepper();
     ['CH 10~12','통계적 추론','추정(최대우도) → 신뢰구간 → 가설검정과 p-value.','var(--good)'],
     ['CH 13~14','관계와 함정','상관과 회귀(상관≠인과) → 통계의 함정(도박사 오류·평균회귀·심슨 역설).','var(--pink)'],
   ];
-  const READY=new Set(['01-probability.html','04-random-variables.html','07-law-large-numbers.html','10-estimation.html']);   // 완성된 챕터 파일명을 추가하면 링크 활성화
+  const READY=new Set(['01-probability.html','04-random-variables.html','07-law-large-numbers.html','10-estimation.html','13-correlation-regression.html']);   // 완성된 챕터 파일명을 추가하면 링크 활성화
   const FILE=['01-probability.html','04-random-variables.html','07-law-large-numbers.html','10-estimation.html','13-correlation-regression.html'];
   document.getElementById('courseMap').innerHTML = MAP.map((m,i)=>{
     const href=FILE[i], soon=!READY.has(href), tag=soon?'span':'a';
