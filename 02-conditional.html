@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02 조건부확률과 독립 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .gridwrap{display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;}
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .frac{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:800;}
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:16px;} @media(max-width:680px){.twocol{grid-template-columns:1fr;}}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+  .pbar{display:grid; grid-template-columns:108px 1fr 54px; gap:10px; align-items:center; margin:6px 0;}
+  .pbar .lab{font-weight:700; text-align:right; font-size:13px;}
+  .pbar .track{height:20px; border-radius:6px; background:var(--panel-2); border:1px solid var(--line); overflow:hidden;}
+  .pbar .fill{height:100%;}
+  .pbar .v{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); text-align:right;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 1 · Chapter 02</div>
+    <h1>조건부확률과 독립 — 정보가 확률을 바꾼다</h1>
+    <p class="intro">"비가 올 확률"과 "<b>먹구름이 낀 걸 봤을 때</b> 비가 올 확률"은 달라요. 새 정보(조건)가 들어오면 확률이 갱신되죠 — 이게 <b>조건부확률 P(A|B)</b>예요. 반대로 조건이 들어와도 확률이 <b>안 바뀌면</b> 두 사건은 <b>독립</b>이에요. 사람들을 직접 솎아내며 익혀봐요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 조건부확률</button>
+    <button data-s="1">01 · 표본공간 줄이기</button>
+    <button data-s="2">02 · 독립</button>
+    <button data-s="3">03 · 정리·함정</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — Information Updates Probability</span>
+    <h2>"안다"는 게 확률을 바꾼다</h2>
+    <p class="lead">조건부확률 <b>P(A|B)</b> = "<b>B가 일어났다는 걸 알 때</b> A가 일어날 확률". 핵심 아이디어는 단순해요 — <b>가능성의 세계(표본공간)를 B인 경우로 좁힌 뒤</b>, 그 안에서 A의 비율을 보는 거예요.</p>
+    <div class="callout" style="margin-top:6px">
+      <p style="margin:0 0 8px"><b style="color:var(--q)">공식</b>: <span class="mono">P(A|B) = P(A 그리고 B) ÷ P(B)</span> — "B인 것들 중에서 A이기도 한 비율".</p>
+      <p style="margin:0">예) 주사위에서 "<b>짝수가 나왔다</b>(B={2,4,6})"는 걸 알 때 "<b>4 이상</b>(A={4,5,6})"일 확률? 짝수 3개 중 4이상인 건 {4,6} 2개 → P(A|B) = 2/3. (조건 없이는 P(A)=3/6=1/2였죠.)</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ "안다"가 확률을 올리거나 내려요. 그 변화량이 두 사건의 <b>관계</b>를 말해줘요 — 안 바뀌면 독립(Step 2).</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Shrink the Sample Space</span>
+    <h2>조건을 걸면, 그 세계 안에서 다시 센다</h2>
+    <p class="lead">100명이 있어요. <b style="color:var(--good)">건강</b>(초록) / <b style="color:var(--k)">아픔</b>(코랄), 그리고 <b>운동함</b>(위 절반) / <b>안 함</b>(아래 절반). "운동한 사람만"으로 조건을 걸면 — <b>표본공간이 그 절반으로 줄고</b>, 그 안에서 건강 비율을 다시 세요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <span class="note">조건 B:</span>
+      <button class="btn" id="cAll">전체</button>
+      <button class="btn" id="cEx" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">운동한 사람만</button>
+      <button class="btn" id="cNo" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">안 한 사람만</button>
+    </div>
+    <div class="gridwrap">
+      <div><div id="grid1"></div>
+        <div class="legend" style="margin-top:8px"><span style="color:var(--good)">●</span> 건강 · <span style="color:var(--k)">●</span> 아픔 · 흐린 점 = 조건에서 제외된 사람 · 위5줄=운동, 아래5줄=안함 · <span style="color:var(--faint)">(예시용 가상 인구)</span></div></div>
+      <div style="flex:1;min-width:220px"><div class="callout q" id="info1"></div></div>
+    </div>
+    <p class="note" style="margin-top:14px">→ "운동한 사람만" 보면 건강 비율이 <b>확 올라가요</b>(80%). 조건이 확률을 바꿨죠 = 운동과 건강은 <b>관련 있다</b>(종속). 조건부확률은 이렇게 "세계를 좁혀 다시 세기"예요.</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">* "관련 있다"는 <b>통계적 종속</b>(확률이 함께 움직임)일 뿐, "운동이 건강을 만든다"는 <b>인과</b>가 아니에요 — 이 구분은 13장에서 다뤄요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Independence</span>
+    <h2>조건이 확률을 안 바꾸면 = 독립</h2>
+    <p class="lead">두 사건이 <b>독립</b>이면 <b>P(A|B) = P(A)</b> — B를 알아도 A의 확률이 그대로예요. "관련 없음"이죠. 종속(왼쪽)과 독립(오른쪽)을 나란히 비교해요.</p>
+    <div class="twocol">
+      <div class="colbox"><h4 style="color:var(--k);margin:0 0 8px">종속: 운동 ↔ 건강</h4><div id="dep"></div>
+        <p class="note" style="margin:8px 0 0;font-size:12px">조건(운동)에 따라 건강 확률이 <b>달라짐</b> → 관련 있음.</p></div>
+      <div class="colbox"><h4 style="color:var(--good);margin:0 0 8px">독립: 주사위 두 개</h4><div id="ind"></div>
+        <p class="note" style="margin:8px 0 0;font-size:12px">첫 주사위가 6이든 아니든 둘째가 짝수일 확률 <b>그대로</b> → 독립.</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">→ 독립이면 막대 높이가 같아요(P(A)=P(A|B)). 독립은 <b>"한 사건이 다른 사건에 정보를 주지 않는다"</b>는 뜻 — 동전 던지기처럼요. 많은 통계 기법이 "관측들이 독립"이라는 가정 위에 서요.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Recap · Trap</span>
+    <h2>정리, 그리고 가장 흔한 함정</h2>
+    <div class="twocol">
+      <div class="callout q"><div class="ttl">조건부확률</div><p style="margin:0">P(A|B) = P(A∩B)/P(B). "B인 것들 중 A의 비율". 새 정보로 확률을 <b>갱신</b>.</p></div>
+      <div class="callout good"><div class="ttl">독립</div><p style="margin:0">P(A|B)=P(A) ⇔ P(A∩B)=P(A)·P(B). 조건이 확률을 <b>안 바꿈</b>.</p></div>
+    </div>
+    <div class="callout k" style="margin-top:14px">
+      <div class="ttl">⚠️ P(A|B) ≠ P(B|A) — 방향을 헷갈리지 말 것!</div>
+      <p style="margin:0">"<b>아플 때</b> 검사 양성일 확률"(P(양성|아픔), 민감도)과 "<b>양성일 때</b> 아플 확률"(P(아픔|양성))은 <b>완전히 달라요</b>. 0번에서 본 "99% 검사 함정"이 바로 이 혼동이에요. 두 방향을 잇는 다리가 다음 장 — <b>베이즈 정리</b>예요.</p>
+    </div>
+    <p class="note" style="margin-top:16px">→ 다음 <b>3장 베이즈 정리</b>: P(B|A)로 P(A|B)를 거꾸로 계산해, "검사 함정" 같은 문제를 정확히 풀어요.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 비율은 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 02 · 조건부확률');
+VZ.setupStepper();
+
+// 인구 100명: 위 5줄(50)=운동, 아래 5줄(50)=안함. 운동:건강40/아픔10, 안함:건강20/아픔30
+function makePop(){
+  const ppl=[]; // {ex, healthy}
+  for(let i=0;i<50;i++) ppl.push({ex:true,  healthy:i<40});   // 운동 40건강+10아픔
+  for(let i=0;i<50;i++) ppl.push({ex:false, healthy:i<20});   // 안함 20건강+30아픔
+  return ppl;
+}
+function dotGrid(ppl, cond){  // cond: p=>bool (조건에 포함되면 밝게)
+  const W=300, cell=28, pad=4, cols=10;
+  let g='';
+  ppl.forEach((p,i)=>{ const r=Math.floor(i/cols), c=i%cols;
+    const x=pad+c*cell+cell/2, y=pad+r*cell+cell/2;
+    const inC = cond? cond(p): true;
+    const col = p.healthy?'var(--good)':'var(--k)';
+    g+=`<circle cx="${x}" cy="${y}" r="9" fill="${col}" opacity="${inC?0.95:0.12}"/>`;
+  });
+  const H=pad*2+cell*10;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="100명 인구 점그리드" style="max-width:100%;display:block">${g}</svg>`;
+}
+
+// ---------- STEP 1 ----------
+(function(){
+  const pop=makePop(); let cond='all';
+  const filt={ all:()=>true, ex:p=>p.ex, no:p=>!p.ex };
+  function render(){
+    document.getElementById('grid1').innerHTML = dotGrid(pop, filt[cond]);
+    const sub=pop.filter(filt[cond]); const healthy=sub.filter(p=>p.healthy).length;
+    const label={all:'전체 100명', ex:'운동한 50명', no:'안 한 50명'}[cond];
+    const plab={all:'P(건강)', ex:'P(건강|운동)', no:'P(건강|안함)'}[cond];
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--q)">${label} 중 건강</div>
+       <p style="margin:0">${plab} = <span class="frac">${healthy}/${sub.length}</span> = <b>${(healthy/sub.length).toFixed(2)}</b></p>
+       <p style="margin:8px 0 0;font-size:12.5px">${cond==='all'?'조건 없이는 60%.':cond==='ex'?'운동한 사람만 보니 80%로 올랐어요!':'안 한 사람만 보니 40%로 떨어졌어요.'}</p>`;
+  }
+  function set(c){ cond=c;
+    [['cAll','all'],['cEx','ex'],['cNo','no']].forEach(([id,cc])=>{ document.getElementById(id).style.cssText = cc===c?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render();
+  }
+  document.getElementById('cAll').onclick=()=>set('all');
+  document.getElementById('cEx').onclick=()=>set('ex');
+  document.getElementById('cNo').onclick=()=>set('no');
+  set('all');
+})();
+
+// ---------- STEP 2 : 종속 vs 독립 비교 ----------
+(function(){
+  function bars(elId, items){  // items: [{lab, p, color}]
+    document.getElementById(elId).innerHTML = items.map(it=>
+      `<div class="pbar"><div class="lab">${it.lab}</div>
+        <div class="track"><div class="fill" style="width:${(it.p*100).toFixed(0)}%;background:${it.color}"></div></div>
+        <div class="v">${(it.p*100).toFixed(0)}%</div></div>`).join('');
+  }
+  // 종속: P(건강)=0.6, P(건강|운동)=0.8, P(건강|안함)=0.4
+  bars('dep', [
+    {lab:'P(건강)', p:0.6, color:'var(--slate)'},
+    {lab:'P(건강|운동)', p:0.8, color:'var(--good)'},
+    {lab:'P(건강|안함)', p:0.4, color:'var(--k)'},
+  ]);
+  // 독립: 주사위 두 개. P(둘째 짝수)=0.5, P(둘째 짝수|첫=6)=0.5, P(둘째 짝수|첫 홀수)=0.5
+  bars('ind', [
+    {lab:'P(짝수)', p:0.5, color:'var(--slate)'},
+    {lab:'P(짝수|첫=6)', p:0.5, color:'var(--good)'},
+    {lab:'P(짝수|첫 홀수)', p:0.5, color:'var(--q)'},
+  ]);
+})();
+</script>
+</body>
+</html>
