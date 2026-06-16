@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>확률과 통계, 눈으로 보기 · 인터랙티브 시각화</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .hero{text-align:center; padding:30px 0 10px;}
+  .hero .tag{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em; text-transform:uppercase; color:var(--q);}
+  .hero h1{font-size:clamp(30px,6vw,52px); font-weight:800; letter-spacing:-.03em; margin:14px 0 12px; line-height:1.05;
+    background:linear-gradient(100deg,#fff,#9bb6ff 55%,var(--v)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .hero p{color:var(--muted); max-width:660px; margin:0 auto; font-size:16px;}
+  .seclabel{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:46px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;}
+  .ccard{display:block; text-decoration:none; background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:22px; transition:.22s; position:relative; overflow:hidden;}
+  .ccard::before{content:''; position:absolute; inset:0 auto 0 0; width:4px; background:var(--accent,var(--q)); opacity:.8;}
+  .ccard:hover{transform:translateY(-4px); border-color:var(--accent,var(--q)); box-shadow:0 14px 36px rgba(0,0,0,.35);}
+  .ccard .num{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent,var(--q)); font-weight:700;}
+  .ccard h3{margin:8px 0 8px; font-size:19px; color:var(--ink); letter-spacing:-.01em;}
+  .ccard p{margin:0; font-size:13.5px; color:var(--muted); line-height:1.6;}
+  .ccard .chips{margin-top:14px; display:flex; gap:6px; flex-wrap:wrap;}
+  .ccard .chip{font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; border-radius:6px;
+    background:var(--panel-2); border:1px solid var(--line); color:var(--muted);}
+  .foot{margin-top:60px;}
+  .ccard.soon{opacity:.5; cursor:not-allowed;}
+  .ccard.soon:hover{transform:none; border-color:var(--line); box-shadow:none;}
+  .ccard.soon::after{content:'🚧 준비 중'; position:absolute; top:12px; right:14px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; color:var(--hot); background:rgba(251,191,36,.12); border:1px solid var(--hot); border-radius:6px; padding:2px 7px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="tag">Probability &amp; Statistics · Visualized · Interactive</div>
+    <h1>확률과 통계, 눈으로 보기</h1>
+    <p>확률부터 가설검정까지 — 불확실함을 다루는 언어를 <b style="color:var(--hot)">동전·주사위·분포·표본</b>으로 직접 던지고 뽑으며 익히는 인터랙티브 학습 자료입니다.</p>
+  </div>
+
+  <a href="00-intro.html" style="display:block;text-decoration:none;margin:8px 0 4px;padding:18px 22px;border-radius:16px;
+     background:linear-gradient(100deg,rgba(251,191,36,.12),rgba(55,189,248,.08));border:1px solid var(--hot);transition:.2s">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--hot);font-weight:700">👋 처음이세요?</div>
+    <div style="font-size:18px;font-weight:800;color:var(--ink);margin:6px 0 4px">0번 — 왜 확률·통계를 배우나 (수식 없는 5분 입문)</div>
+    <div style="font-size:13.5px;color:var(--muted)">큰 수의 법칙·"99% 검사의 함정"으로 보는 핵심 직관과 코스 전체 지도를 먼저 둘러보세요. →</div>
+  </a>
+
+  <div class="seclabel">PART 1 · 확률의 기초</div>
+  <div class="cards">
+    <a class="ccard" style="--accent:var(--hot)" href="01-probability.html"><div class="num">01</div><h3>확률이란</h3>
+      <p>빈도 vs 믿음, 표본공간과 사건. "확률 0.7"이 뜻하는 것.</p><div class="chips"><span class="chip">sample space</span><span class="chip">frequency</span></div></a>
+    <a class="ccard" style="--accent:var(--q)" href="02-conditional.html"><div class="num">02</div><h3>조건부확률과 독립</h3>
+      <p>"B를 알 때 A". 독립이란 무엇이고 왜 헷갈리나.</p><div class="chips"><span class="chip">P(A|B)</span><span class="chip">independence</span></div></a>
+    <a class="ccard" style="--accent:var(--v)" href="03-bayes.html"><div class="num">03</div><h3>베이즈 정리</h3>
+      <p>사전→사후 믿음 갱신. 의료검사 함정을 푸는 열쇠.</p><div class="chips"><span class="chip">prior→posterior</span></div></a>
+  </div>
+
+  <div class="seclabel">PART 2 · 확률변수와 분포</div>
+  <div class="cards">
+    <a class="ccard" style="--accent:var(--hot)" href="04-random-variables.html"><div class="num">04</div><h3>확률변수와 기댓값</h3>
+      <p>무작위를 숫자로. 기댓값(평균)과 분산(퍼짐).</p><div class="chips"><span class="chip">E[X]</span><span class="chip">Var</span></div></a>
+    <a class="ccard" style="--accent:var(--q)" href="05-distributions.html"><div class="num">05</div><h3>핵심 분포들</h3>
+      <p>베르누이·이항·포아송. 어떤 상황에 어떤 분포.</p><div class="chips"><span class="chip">binomial</span><span class="chip">poisson</span></div></a>
+    <a class="ccard" style="--accent:var(--v)" href="06-normal.html"><div class="num">06</div><h3>정규분포</h3>
+      <p>종 모양과 68-95-99.7 규칙. 왜 이렇게 흔할까.</p><div class="chips"><span class="chip">bell curve</span><span class="chip">z</span></div></a>
+  </div>
+
+  <div class="seclabel">PART 3 · 큰 수와 중심극한정리</div>
+  <div class="cards">
+    <a class="ccard" style="--accent:var(--hot)" href="07-law-large-numbers.html"><div class="num">07</div><h3>큰 수의 법칙</h3>
+      <p>표본이 많을수록 평균이 진짜 기댓값으로 수렴.</p><div class="chips"><span class="chip">LLN</span></div></a>
+    <a class="ccard" style="--accent:var(--q)" href="08-clt.html"><div class="num">08</div><h3>중심극한정리 (CLT)</h3>
+      <p>어떤 분포든 표본평균은 정규분포로. 통계의 왕관.</p><div class="chips"><span class="chip">CLT</span><span class="chip">→ normal</span></div></a>
+    <a class="ccard" style="--accent:var(--v)" href="09-sampling-distribution.html"><div class="num">09</div><h3>표본분포와 표준오차</h3>
+      <p>"추정값도 분포한다". 표본이 클수록 오차가 준다.</p><div class="chips"><span class="chip">SE</span></div></a>
+  </div>
+
+  <div class="seclabel">PART 4 · 통계적 추론</div>
+  <div class="cards">
+    <a class="ccard" style="--accent:var(--hot)" href="10-estimation.html"><div class="num">10</div><h3>추정 (최대우도)</h3>
+      <p>데이터로 모수 맞히기. "가장 그럴듯한" 값 찾기.</p><div class="chips"><span class="chip">MLE</span></div></a>
+    <a class="ccard" style="--accent:var(--q)" href="11-confidence-interval.html"><div class="num">11</div><h3>신뢰구간</h3>
+      <p>"이 범위 안에 있을 것". 95% 신뢰의 진짜 의미.</p><div class="chips"><span class="chip">95% CI</span></div></a>
+    <a class="ccard" style="--accent:var(--v)" href="12-hypothesis-testing.html"><div class="num">12</div><h3>가설검정과 p-value</h3>
+      <p>"우연일까 진짜일까". p-value의 흔한 오해까지.</p><div class="chips"><span class="chip">p-value</span><span class="chip">H₀</span></div></a>
+  </div>
+
+  <div class="seclabel">PART 5 · 관계와 함정</div>
+  <div class="cards">
+    <a class="ccard" style="--accent:var(--hot)" href="13-correlation-regression.html"><div class="num">13</div><h3>상관과 회귀</h3>
+      <p>함께 움직임 vs 인과. 점들에 가장 맞는 직선.</p><div class="chips"><span class="chip">correlation</span><span class="chip">regression</span></div></a>
+    <a class="ccard" style="--accent:var(--good)" href="14-pitfalls.html"><div class="num">14</div><h3>통계의 함정</h3>
+      <p>도박사 오류·평균 회귀·심슨 역설 + 전체 정리.</p><div class="chips"><span class="chip">fallacies</span></div></a>
+  </div>
+
+  <p class="foot">// 확률·통계 핵심 개념을 직접 만든 비영리 인터랙티브 학습 자료 · 모든 표본·분포·추정은 브라우저에서 실시간 계산</p>
+</div>
+<script>
+// 공개된 페이지만 클릭 가능 — 챕터 완성 시 파일명을 READY에 추가하세요.
+(function(){
+  const READY = new Set(['00-intro.html']);
+  document.querySelectorAll('a.ccard').forEach(a=>{ if(READY.has(a.getAttribute('href'))) return; a.classList.add('soon'); a.addEventListener('click', e=>e.preventDefault()); });
+})();
+</script>
+</body>
+</html>

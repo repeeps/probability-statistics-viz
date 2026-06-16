@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>00 시작하기 — 왜 확률·통계인가 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .use-card{cursor:pointer; user-select:none;}
+  .use-card .reveal{display:none; margin-top:10px; font-size:13px; color:var(--muted); line-height:1.6;}
+  .use-card.open .reveal{display:block;} .use-card.open{border-color:var(--q);} .use-card.open .clickhint{display:none;}
+  .use-emoji{font-size:30px; line-height:1;}
+  .maprow{display:flex; align-items:center; gap:10px; padding:10px 0; text-decoration:none;}
+  .mapnum{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent,var(--q)); font-weight:700; min-width:64px;}
+  .maparrow{text-align:center; color:var(--faint); font-size:16px; margin:-2px 0;}
+  .soonbadge{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--hot); border:1px solid var(--hot); border-radius:6px; padding:2px 7px; white-space:nowrap;}
+  .maprow.soon{opacity:.6; cursor:default;}
+  .big{font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:800;}
+  .ppl{display:flex; gap:24px; flex-wrap:wrap; margin-top:8px;}
+  .ppl .b{font-size:13px;}
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">START HERE · Chapter 00</div>
+    <h1>왜 확률·통계인가 — 불확실함을 다루는 언어</h1>
+    <p class="intro">내일 비가 올까? 이 검사 결과를 믿어도 될까? 광고 A와 B 중 뭐가 더 나을까? 세상은 <b>불확실함</b>으로 가득해요. 확률·통계는 그 불확실함을 <b>숫자로 다루고, 데이터에서 결론을 끌어내는</b> 언어예요. 그리고 — 우리 직관은 이 영역에서 <b>자주 틀려요</b>. 그래서 더 배울 가치가 있죠. 먼저 직접 돌려보며 둘러봐요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 어디에나</button>
+    <button data-s="1">01 · 무작위 속 규칙</button>
+    <button data-s="2">02 · 직관은 틀린다</button>
+    <button data-s="3">03 · 코스 지도</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — It's Everywhere</span>
+    <h2>불확실한 결정은 모두 확률·통계</h2>
+    <p class="lead">"확실하지 않지만 결정은 내려야 하는" 모든 곳에 확률·통계가 숨어 있어요. 카드를 눌러 확인해 보세요.</p>
+    <div class="grid3" id="useCards"></div>
+    <p class="note" style="margin-top:16px">→ 공통점: <b>"하나하나는 못 맞혀도, 많이 모으면 규칙이 보인다."</b> 그 규칙을 다루는 게 <b>확률</b>(앞일을 숫자로)과 <b>통계</b>(데이터에서 거꾸로 추론)예요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Order in Randomness</span>
+    <h2>동전 한 번은 몰라도, 만 번은 안다</h2>
+    <p class="lead">동전 한 번의 결과는 <b>아무도 못 맞혀요</b>(무작위). 그런데 계속 던지면 <b>앞면 비율</b>이 신기하게 <b>0.5로 빨려들어가요</b>. 개별은 무작위지만 집단은 예측 가능 — 이게 <b>큰 수의 법칙</b>, 통계의 출발점이에요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="f1">+1 던지기</button><button class="btn" id="f100">+100</button><button class="btn" id="f1000">+1000</button>
+      <button class="btn" id="freset" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">↺ 리셋</button>
+    </div>
+    <div id="flipInfo" class="callout q"></div>
+    <div class="chart-wrap" id="flipChart" style="margin-top:10px"></div>
+    <div class="legend" style="margin-top:6px">세로축 = 누적 앞면 비율 · 점선 = 0.5(진짜 확률)</div>
+    <p class="note" style="margin-top:12px">→ 처음엔 비율이 들쭉날쭉(운)하지만, 던질수록 0.5에 <b>안정적으로</b> 수렴해요. "표본이 많을수록 진실에 가까워진다" — 통계가 작동하는 이유예요.</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">⚠️ 단, 비율이 0.5로 모이는 건 동전이 "균형을 맞추려 해서"가 <b>아니에요</b>. 매 던짐은 직전과 완전히 무관해서(독립) 그냥 평균이 안정될 뿐 — 앞면이 5번 연속 나와도 다음이 뒷면일 확률은 여전히 0.5예요. (이 흔한 착각이 <b>14장 도박사 오류</b>!)</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Intuition Fails</span>
+    <h2>"99% 정확한 검사 양성 = 99% 아픔"? 아니에요</h2>
+    <p class="lead">희귀병 검사를 생각해봐요. 검사가 꽤 <b>정확</b>해도, 병이 <b>드물면</b> — 양성이 나와도 실제로 아플 확률은 <b>놀랍도록 낮아요</b>. 거짓양성이 훨씬 많거든요. 유병률과 정확도를 바꿔보세요.</p>
+    <div class="ctrl"><label>유병률 (10000명 중)</label><input type="range" id="prev" min="1" max="1000" value="100"><span class="val" id="prevv">100명</span></div>
+    <div class="ctrl"><label>검사 정확도</label><input type="range" id="acc" min="800" max="999" value="950"><span class="val" id="accv">95.0%</span></div>
+    <div id="bayesInfo" class="callout v" style="margin-top:8px"></div>
+    <div id="bayesBar" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:8px;color:var(--faint)">* 여기선 설명을 위해 "맞힐 확률"을 양성·음성 양쪽에 똑같이 적용했어요(민감도=특이도). 실제 검사는 둘이 다를 수 있고, <b>3장</b>에서 나눠 다뤄요.</p>
+    <p class="note" style="margin-top:10px">→ 핵심은 <b>사전확률(base rate)</b> — "원래 얼마나 드문가". 이걸 무시하면 직관이 크게 빗나가요. 이 함정을 푸는 도구가 <b>3장 베이즈 정리</b>예요. (의사·판사·투자자도 자주 틀리는 부분!)</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Your Learning Map</span>
+    <h2>이 코스에서 배울 것 — 그리고 왜 이 순서인지</h2>
+    <p class="lead">먼저 <b>확률</b>(앞일을 숫자로)을 세우고, <b>확률변수와 분포</b>로 무작위를 모형화해요. 그다음 <b>큰 수의 법칙·중심극한정리</b>로 "표본→진실"의 다리를 놓고, <b>통계적 추론</b>(추정·검정)으로 데이터에서 결론을 끌어내요. 마지막에 <b>관계와 함정</b>을 봅니다.</p>
+    <div id="courseMap"></div>
+    <p class="note" style="margin-top:16px">→ 챕터는 순차 공개돼요. <b>CH 01 · 확률이란</b>부터 시작하세요.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 입문 챕터 · 직관 먼저, 자세한 건 다음 챕터부터 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '00 · Intro');
+VZ.setupStepper();
+
+// ---------- STEP 0 : 어디에나 ----------
+(function(){
+  const U=[
+    ['🌦️','날씨 예보','"내일 비 올 확률 70%"는 통계 모형이 과거 비슷한 날들에서 뽑은 빈도예요.'],
+    ['🩺','의료 검사·진단','검사 결과를 얼마나 믿을지, 약이 진짜 효과 있는지 — 전부 확률·통계로 판단해요.'],
+    ['🗳️','여론조사','1000명만 물어보고 5천만의 마음을 추정해요. 표본으로 모집단을 맞히는 게 통계.'],
+    ['📧','스팸 필터','단어들의 확률로 "스팸일 확률"을 계산(나이브 베이즈). 메일함이 깨끗한 이유.'],
+    ['🧪','A/B 테스트','버튼 색 A vs B, 어느 게 더 클릭 많은지 "우연이 아니라 진짜 차이"인지 검정.'],
+    ['🎰','보험·도박·투자','기대값과 리스크를 확률로 계산해 가격을 매기고 베팅 크기를 정해요.'],
+  ];
+  document.getElementById('useCards').innerHTML = U.map(u=>
+    `<div class="card use-card"><div class="use-emoji">${u[0]}</div><h4 style="margin:8px 0 0">${u[1]}</h4>
+      <div class="reveal">${u[2]}</div><div class="note clickhint" style="margin-top:8px;font-size:11px;color:var(--faint)">클릭해서 보기 ▾</div></div>`).join('');
+  document.getElementById('useCards').addEventListener('click',e=>{ const c=e.target.closest('.use-card'); if(c)c.classList.toggle('open'); });
+})();
+
+// ---------- STEP 1 : 큰 수의 법칙 (동전) ----------
+(function(){
+  let n, heads, hist;
+  function reset(){ n=0; heads=0; hist=[]; render(); info('동전을 던져보세요. 처음엔 비율이 출렁여요.'); }
+  function flip(k){
+    for(let i=0;i<k;i++){ n++; if(Math.random()<0.5) heads++;
+      // 누적 n 기준 적응 간격(배치 경계 끊김 방지) — 초반은 촘촘, 후반은 듬성
+      if(n<=30 || n%Math.max(1,Math.round(n/60))===0 || i===k-1) hist.push([n, heads/n]); }
+    render(); const p=heads/n;
+    info(`<div class="ttl" style="color:var(--q)">${n.toLocaleString()}번 던짐 · 앞면 ${heads.toLocaleString()}</div>
+      <p style="margin:0">앞면 비율 = <b>${p.toFixed(3)}</b> (0.5와의 차이 ${Math.abs(p-0.5).toFixed(3)}). ${n>=1000?'0.5에 바짝 붙었죠!':'더 던질수록 0.5로 모여요.'}</p>`);
+  }
+  function render(){
+    if(hist.length>1) document.getElementById('flipChart').innerHTML =
+      VZ.linePlot([{pts:hist,color:'var(--q)',label:'앞면 비율'}],{W:540,H:200,xlab:'던진 횟수',ymin:0,ymax:1,legend:false,hline:{y:0.5,label:'0.5'}});
+    else document.getElementById('flipChart').innerHTML='<div class="legend" style="padding:24px;text-align:center">+100 / +1000을 누르면 수렴 곡선이 그려져요.</div>';
+  }
+  function info(m){ document.getElementById('flipInfo').innerHTML=m; }
+  document.getElementById('f1').onclick=()=>flip(1);
+  document.getElementById('f100').onclick=()=>flip(100);
+  document.getElementById('f1000').onclick=()=>flip(1000);
+  document.getElementById('freset').onclick=reset;
+  reset();
+})();
+
+// ---------- STEP 2 : 베이즈 의료검사 (자연빈도) ----------
+(function(){
+  const N=10000; let prev=100, acc=0.95;
+  function render(){
+    const sick=prev, healthy=N-sick;
+    const tp=sick*acc, fp=healthy*(1-acc);          // 정확도=민감도=특이도로 단순화
+    const pos=tp+fp, pSickGivenPos = pos>0 ? tp/pos : 0;
+    document.getElementById('bayesInfo').innerHTML =
+      `<div class="ttl" style="color:var(--v)">양성인데 실제로 아플 확률 = <span class="big" style="color:${pSickGivenPos<0.5?'var(--k)':'var(--good)'}">${(pSickGivenPos*100).toFixed(0)}%</span></div>
+       <div class="ppl">
+         <span class="b">🧑‍🤝‍🧑 ${N.toLocaleString()}명 중 아픔 <b>${Math.round(sick)}</b> · 건강 <b>${Math.round(healthy).toLocaleString()}</b></span>
+       </div>
+       <p style="margin:8px 0 0">양성 판정 <b>${Math.round(pos)}</b>명 = 진짜 아픔 <b style="color:var(--good)">${Math.round(tp)}</b> + <b style="color:var(--k)">거짓양성 ${Math.round(fp)}</b>. ${pSickGivenPos<0.5?'거짓양성이 더 많아 양성이어도 안심 못 해요!':'이 경우엔 양성이 꽤 믿을 만하죠.'}</p>`;
+    const pctOf=x=> pos>0?(x/pos*100).toFixed(0):0;
+    document.getElementById('bayesBar').innerHTML =
+      VZ.barRow('진짜 아픔', pos>0?tp/pos:0, {color:'var(--good)', pctText:`${Math.round(tp)}명·${pctOf(tp)}%`}) +
+      VZ.barRow('거짓양성', pos>0?fp/pos:0, {color:'var(--k)', pctText:`${Math.round(fp)}명·${pctOf(fp)}%`});
+  }
+  document.getElementById('prev').oninput=e=>{ prev=+e.target.value; document.getElementById('prevv').textContent=prev+'명'; render(); };
+  document.getElementById('acc').oninput=e=>{ acc=e.target.value/1000; document.getElementById('accv').textContent=(acc*100).toFixed(1)+'%'; render(); };
+  render();
+})();
+
+// ---------- STEP 3 : 코스 지도 ----------
+(function(){
+  const MAP=[
+    ['CH 01~03','확률의 기초','확률이란(빈도·믿음) → 조건부확률·독립 → 베이즈 정리.','var(--q)'],
+    ['CH 04~06','확률변수와 분포','확률변수·기댓값 → 핵심 분포들(이항·포아송·정규) → 정규분포.','var(--v)'],
+    ['CH 07~09','큰 수와 CLT','큰 수의 법칙 → 중심극한정리 → 표본분포·표준오차.','var(--hot)'],
+    ['CH 10~12','통계적 추론','추정(최대우도) → 신뢰구간 → 가설검정과 p-value.','var(--good)'],
+    ['CH 13~14','관계와 함정','상관과 회귀(상관≠인과) → 통계의 함정(도박사 오류·평균회귀·심슨 역설).','var(--pink)'],
+  ];
+  const READY=new Set([]);   // 완성된 챕터 파일명을 추가하면 링크 활성화
+  const FILE=['01-probability.html','04-random-variables.html','07-law-large-numbers.html','10-estimation.html','13-correlation-regression.html'];
+  document.getElementById('courseMap').innerHTML = MAP.map((m,i)=>{
+    const href=FILE[i], soon=!READY.has(href), tag=soon?'span':'a';
+    const right=soon?'<span class="soonbadge">준비 중</span>':`<span style="color:${m[3]};font-size:18px">→</span>`;
+    return `${i>0?'<div class="maparrow">↓</div>':''}
+     <${tag} class="maprow${soon?' soon':''}" ${soon?'':`href="${href}"`} style="--accent:${m[3]}">
+       <span class="mapnum">${m[0]}</span>
+       <span style="flex:1"><b style="color:var(--ink)">${m[1]}</b><div class="note" style="margin-top:2px">${m[2]}</div></span>
+       ${right}
+     </${tag}>`;
+  }).join('');
+})();
+</script>
+</body>
+</html>
