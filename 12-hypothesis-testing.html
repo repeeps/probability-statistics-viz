@@ -60,7 +60,8 @@
     </div>
     <div id="info1" class="callout q"></div>
     <div class="chart-wrap" id="pvalChart" style="margin-top:10px"></div>
-    <p class="note" style="margin-top:12px">→ 같은 "58%"라도 <b>n이 크면 p가 작아져요</b>: 표본이 클수록 0.5에서 조금만 벗어나도 "우연으론 드문 일"이 되거든요(꼬리가 더 얇아짐). 그래서 큰 표본에선 <b>아주 작은 차이도 유의</b>하게 나와요(2·3단계에서 그 함정을).</p>
+    <p class="note" style="margin-top:8px;color:var(--q)">👀 그림에서: 주황 세로선이 <b>관측값</b>. 양쪽 <b>빨간 꼬리</b>가 바로 "관측만큼 또는 <b>그보다 더 극단적</b>(0.5에서 더 먼)"인 영역이에요 — 그 넓이를 합친 게 p. 관측이 0.5에서 멀수록 꼬리(=p)가 얇아져요.</p>
+    <p class="note" style="margin-top:10px">→ 같은 "58%"라도 <b>n이 크면 p가 작아져요</b>: 표본이 클수록 0.5에서 조금만 벗어나도 "우연으론 드문 일"이 되거든요(꼬리가 더 얇아짐). 그래서 큰 표본에선 <b>아주 작은 차이도 유의</b>하게 나와요(2·3단계에서 그 함정을).</p>
   </section>
 
   <!-- STEP 2 -->
@@ -73,6 +74,7 @@
       <div class="mh">기각함</div><div class="bad"><b style="color:var(--k)">1종 오류</b><br>거짓 양성 (확률 α)</div><div class="ok">정답 ✓<br>(검정력)</div>
       <div class="mh">기각 못함</div><div class="ok">정답 ✓</div><div class="bad"><b style="color:var(--k)">2종 오류</b><br>거짓 음성 (확률 β)</div>
     </div>
+    <p class="note" style="margin-top:8px;color:var(--faint)"><b>검정력</b> = 진짜 효과가 있을 때 그걸 제대로 잡아낼 확률(= 1 − β). 표본 n이 클수록 검정력이 커져 작은 효과도 잘 잡아요.</p>
     <p class="lead" style="margin-top:16px">α=0.05의 무서운 면: <b>효과가 전혀 없어도</b> 검정을 <b>여러 번</b> 하면 우연히 p&lt;0.05가 튀어나와요. 효과 없는 검정을 20번 돌려보세요.</p>
     <div class="row" style="gap:8px;margin-bottom:8px">
       <button class="btn" id="run20" style="border-color:var(--v)">효과 없는 검정 20번 실행</button>

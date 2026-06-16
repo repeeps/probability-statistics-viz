@@ -62,11 +62,14 @@
   <section class="panel" data-panel="2">
     <span class="kicker" style="color:var(--v)">Step 02 — Poisson</span>
     <h2>드문 사건이 몇 번이나 일어날까</h2>
-    <p class="lead"><b>포아송분포</b>는 "정해진 구간에 평균 <b>λ</b>번, <b>서로 독립적·일정한 비율로</b> 일어나는 사건"의 횟수예요. 콜센터 1시간 전화 수, 페이지 오타 수, 별똥별 수… λ만 알면 "0번/1번/2번… 일어날 확률"이 정해져요.</p>
-    <div class="ctrl"><label>평균 발생 λ</label><input type="range" id="lam" min="1" max="150" value="30"><span class="val" id="lamv">3.0</span></div>
+    <p class="lead"><b>포아송분포</b>는 "정해진 구간(1시간, 책 한 권…)에 <b>드문드문</b> 일어나는 사건이 몇 번이나"의 분포예요. 콜센터 1시간 전화 수, 페이지 오타 수, 별똥별 수처럼요. 평균 발생 횟수 하나만 알면 "0번/1번/2번… 일어날 확률"이 정해져요.</p>
+    <p class="note" style="margin-top:-2px;color:var(--faint)">그 평균 발생 횟수를 통계에선 <b>λ(람다)</b>라는 그리스 문자로 써요 — 어렵게 볼 것 없이 "평균"이라고 읽으면 돼요. (단, 사건들이 서로 영향 없이 일정한 비율로 일어난다는 가정 위에서요.)</p>
+    <div class="ctrl"><label>평균 발생 λ(=평균)</label><input type="range" id="lam" min="1" max="150" value="30"><span class="val" id="lamv">3.0</span></div>
     <div class="chart-wrap" id="poisChart"></div>
     <div id="info2" class="callout v" style="margin-top:10px"></div>
-    <p class="note" style="margin-top:12px">→ 포아송은 사실 <b>이항의 극한</b>이에요 — "기회는 아주 많고(n→∞) 각 성공확률은 아주 작은데(p→0) 평균 np=λ는 일정"한 상황. λ가 커지면 역시 <b>종 모양</b>으로 가요.</p>
+    <p class="note" style="margin-top:12px">→ λ가 작으면 0~1에 쏠리고, <b>λ가 커지면</b> 이항·정규처럼 역시 <b>종 모양</b>으로 가요.</p>
+    <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted);font-size:13px">💡 더 알고 싶다면 (몰라도 됨) ▾</summary>
+      <p class="note" style="margin-top:6px;color:var(--faint)">포아송은 사실 이항분포의 한 극단이에요 — "기회는 엄청 많은데(n이 큼) 한 번 성공할 확률은 아주 작은(p가 작음)" 상황(예: 1시간 = 수많은 '순간'들, 각 순간 전화 올 확률은 아주 작음).</p></details>
   </section>
 
   <!-- STEP 3 -->
@@ -74,6 +77,7 @@
     <span class="kicker" style="color:var(--good)">Step 03 — Which Distribution When</span>
     <h2>어떤 상황에 어떤 분포</h2>
     <table class="cmp" id="cmpTable"></table>
+    <p class="note" style="margin-top:8px;color:var(--faint)">* <b>모수</b> = 분포의 모양을 정하는 "손잡이" 값이에요. 이 값만 정하면(예: 이항의 n·p, 포아송의 λ) 분포 전체가 결정돼요.</p>
     <div class="callout good" style="margin-top:14px">
       <p style="margin:0">핵심: <b>상황의 구조</b>가 분포를 정해요. "한 번 성패→베르누이", "n번 중 성공수→이항", "드문 사건 횟수→포아송". 그리고 <b>n이나 λ가 커지면 모두 종 모양(정규분포)</b>으로 수렴해요 — 정규분포가 왜 그렇게 흔한지가 다음 장 주제예요.</p>
     </div>

@@ -70,7 +70,8 @@
   <section class="panel" data-panel="2">
     <span class="kicker" style="color:var(--v)">Step 02 — Variance &amp; Spread</span>
     <h2>같은 평균, 다른 퍼짐</h2>
-    <p class="lead">기댓값이 <b>같아도</b> 분포 모양은 천차만별이에요. 셋 다 평균 3.5인데 <b>퍼진 정도(분산)</b>가 달라요. 분산 = "평균에서 떨어진 거리²의 평균", 표준편차 = √분산(원래 단위로).</p>
+    <p class="lead">기댓값이 <b>같아도</b> 분포 모양은 천차만별이에요. 셋 다 평균 3.5인데 <b>퍼진 정도(분산)</b>가 달라요. 분산 = "평균에서 떨어진 거리를 <b>제곱</b>해서 평균낸 것"이에요.</p>
+    <p class="note" style="margin-top:-2px;color:var(--faint)">왜 제곱할까요? 그냥 거리를 더하면 평균보다 큰 쪽(+)과 작은 쪽(−)이 <b>상쇄돼 늘 0</b>이 돼요. 제곱하면 부호가 사라지고, 큰 차이가 더 크게 반영돼요. 대신 단위가 "점²"처럼 제곱이 되니, √로 되돌린 게 <b>표준편차</b>(원래 단위)예요.</p>
     <div class="row" style="gap:8px;margin-bottom:8px">
       <button class="btn" id="dDie">주사위 1~6</button>
       <button class="btn" id="dNarrow" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">3 또는 4</button>
@@ -86,7 +87,7 @@
   <section class="panel" data-panel="3">
     <span class="kicker" style="color:var(--good)">Step 03 — Expected Value in Action</span>
     <h2>복권은 왜 사면 손해일까</h2>
-    <p class="lead">기댓값은 "이 게임을 무한히 반복하면 한 판 평균 얼마"예요. <b>기대 순이익</b> = (당첨확률 × 당첨금) − 표값. 당첨금과 확률을 조절해보세요.</p>
+    <p class="lead">기댓값은 "이 게임을 무한히 반복하면 한 판 평균 얼마"예요. <b>기대 순이익</b> = (당첨확률 × 당첨금) − 표값. 여기선 <b>표값을 1만원으로 고정</b>하고, 당첨 확률과 당첨금만 조절해봐요(당첨금 슬라이더는 만원 단위, 화면엔 억으로 표시).</p>
     <div class="ctrl"><label>당첨 확률 (백만분의)</label><input type="range" id="pwin" min="1" max="500" value="20"><span class="val" id="pwinv">20</span></div>
     <div class="ctrl"><label>당첨금 (만원)</label><input type="range" id="prize" min="100" max="200000" value="20000"><span class="val" id="prizev">2억</span></div>
     <div id="info3" class="callout"></div>

@@ -56,7 +56,9 @@
       <button class="btn" id="n1">1</button><button class="btn" id="n2">2</button><button class="btn" id="n5">5</button><button class="btn" id="n10">10</button><button class="btn" id="n30">30</button>
     </div>
     <div id="info1" class="callout q"></div>
-    <div class="twocol" style="margin-top:10px">
+    <p class="note" style="margin:10px 0 6px;color:var(--q)">👀 읽는 법: 막대 하나하나는 "<b>n개를 뽑아 낸 평균값</b>" 한 번이에요(예: n=5면 주사위 5개를 굴려 <b>평균 하나</b>를 내고, 그 값이 막대 한 칸에 떨어져요). 그걸 수천 번 반복해 쌓은 게 이 히스토그램이죠. 아래 <b>두 그림은 똑같은 데이터</b>인데 — ①은 <b>축을 고정</b>해 폭이 좁아지는 걸, ②는 <b>매번 화면 폭에 꽉 차게 확대</b>해 모양(종 여부)만 보여줘요.</p>
+    <p class="note" style="margin:0 0 6px;color:var(--faint)">그래서 ②는 n을 키워도 늘 종모양으로 꽉 차 보이는 게 <b>정상</b>이에요(좁아진 분포를 다시 확대했으니까). ②는 <b>폭이 아니라 모양</b>만, 폭은 ①에서 보세요.</p>
+    <div class="twocol" style="margin-top:6px">
       <div><div class="legend" style="margin-bottom:4px">① 고정 축 — <b>폭이 좁아지는 것</b>이 보여요</div><div id="cltFixed"></div></div>
       <div><div class="legend" style="margin-bottom:4px">② 확대 축 — <b>모양이 종이 되는 것</b>이 보여요</div><div id="cltZoom"></div></div>
     </div>

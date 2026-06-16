@@ -67,9 +67,10 @@
   <section class="panel" data-panel="2">
     <span class="kicker" style="color:var(--v)">Step 02 — Intuition Fails</span>
     <h2>"99% 정확한 검사 양성 = 99% 아픔"? 아니에요</h2>
-    <p class="lead">희귀병 검사를 생각해봐요. 검사가 꽤 <b>정확</b>해도, 병이 <b>드물면</b> — 양성이 나와도 실제로 아플 확률은 <b>놀랍도록 낮아요</b>. 거짓양성이 훨씬 많거든요. 유병률과 정확도를 바꿔보세요.</p>
+    <p class="lead">희귀병 검사를 생각해봐요. 검사가 꽤 <b>정확</b>해도, 병이 <b>드물면</b> — 양성이 나와도 실제로 아플 확률은 <b>놀랍도록 낮아요</b>. 거짓양성이 훨씬 많거든요. <b>유병률</b>(인구 1만 명 중 그 병을 가진 사람 수)과 검사 정확도를 바꿔보세요.</p>
     <div class="ctrl"><label>유병률 (10000명 중)</label><input type="range" id="prev" min="1" max="1000" value="100"><span class="val" id="prevv">100명</span></div>
     <div class="ctrl"><label>검사 정확도</label><input type="range" id="acc" min="800" max="999" value="950"><span class="val" id="accv">95.0%</span></div>
+    <p class="note" style="margin:6px 0 0;color:var(--q)">👆 직접 해보기: 유병률을 <b>왼쪽 끝(드문 병)</b>으로 당겨보세요. 검사 정확도는 그대로인데도 "양성일 때 진짜 아플 확률"이 뚝 떨어져요.</p>
     <div id="bayesInfo" class="callout v" style="margin-top:8px"></div>
     <div id="bayesBar" style="margin-top:10px"></div>
     <p class="note" style="margin-top:8px;color:var(--faint)">* 여기선 설명을 위해 "맞힐 확률"을 양성·음성 양쪽에 똑같이 적용했어요(민감도=특이도). 실제 검사는 둘이 다를 수 있고, <b>3장</b>에서 나눠 다뤄요.</p>

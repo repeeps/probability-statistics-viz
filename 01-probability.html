@@ -65,7 +65,7 @@
       <span class="note">빠른 사건:</span>
       <button class="btn" id="evEven">짝수</button>
       <button class="btn" id="evHigh" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">4 이상</button>
-      <button class="btn" id="evPrime" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">소수</button>
+      <button class="btn" id="evPrime" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">소수(2,3,5)</button>
     </div>
     <div id="info1" class="callout q"></div>
     <p class="note" style="margin-top:12px">→ 사건이 클수록(유리한 경우가 많을수록) 확률이 커져요. 아무 눈도 없으면 P=0(불가능한 사건), 다 고르면 P=1(반드시 일어남). 이게 "<b>경우의 수로 세는</b>" 고전적 확률이에요.</p>
@@ -101,7 +101,8 @@
     </div>
     <div class="callout" style="margin-top:14px">
       <div class="ttl">합사건: P(A 또는 B)</div>
-      <p style="margin:0">서로 <b>겹치지 않으면</b>(배반) P(A 또는 B) = P(A) + P(B). 겹치면 겹친 부분을 한 번 빼줘요: P(A)+P(B)−P(A와 B). 예) 주사위에서 "짝수 또는 4이상" = 3/6 + 3/6 − 2/6 = 4/6(짝수면서 4이상인 4,6을 중복 제거).</p>
+      <p style="margin:0 0 6px">서로 <b>겹치지 않으면</b>(배반) P(A 또는 B) = P(A) + P(B). 겹치면 두 번 센 부분을 한 번 빼줘요: P(A) + P(B) − P(A와 B).</p>
+      <p style="margin:0;font-size:13px;color:var(--muted)">예) 주사위 "짝수 또는 4이상": 짝수 {2,4,6} 3개 + 4이상 {4,5,6} 3개인데, <b>4와 6은 양쪽에 다 들어</b> 두 번 셌어요. 그래서 한 번 빼면 → 3/6 + 3/6 − 2/6 = <b>4/6</b>.</p>
     </div>
     <p class="note" style="margin-top:16px">→ 여사건은 강력해요 — "적어도 하나"의 확률은 "하나도 안 일어남"의 여사건으로 쉽게 구하거든요. 다음 <b>2장</b>에서 "B를 알 때 A의 확률"(조건부확률)과 독립을 다뤄요.</p>
   </section>

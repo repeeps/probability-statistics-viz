@@ -34,7 +34,8 @@
   <section class="panel show" data-panel="0">
     <span class="kicker" style="color:var(--hot)">Step 00 — Point Estimation</span>
     <h2>표본 통계량으로 모수를 겨냥</h2>
-    <p class="lead">모집단의 진짜 값(<b>모수</b>: μ, p, σ²…)은 직접 못 봐요. 대신 표본에서 같은 종류의 값(<b>통계량</b>: 표본평균 x̄, 표본비율 p̂, 표본분산 s²)을 구해 "이게 진짜 값일 것"이라고 <b>한 점</b>으로 추정해요. 이게 <b>점추정</b>이에요.</p>
+    <p class="lead">전체 인구의 <b>진짜 평균·비율</b>은 직접 못 봐요(다 조사할 수 없으니까). 대신 <b>표본에서 같은 값을 재서</b> "진짜도 이쯤일 것"이라고 한 점으로 찍는 게 <b>점추정</b>이에요.</p>
+    <p class="note" style="margin-top:-2px;color:var(--faint)">용어 두 개만: <b>모수</b> = 모집단의 진짜 값(평균 μ, 비율 p, 분산 σ²). <b>통계량</b> = 표본에서 잰 값(표본평균 x̄, 표본비율 p̂, 표본분산 s²). 기호는 그냥 줄임말이니 "진짜 값 / 표본에서 잰 값"으로 읽으면 돼요.</p>
     <div class="callout" style="margin-top:6px">
       <p style="margin:0 0 8px"><b style="color:var(--q)">좋은 추정량의 3가지</b>: ① <b>불편성</b> — 여러 번 추정하면 평균이 진짜 값(과녁 정중앙). ② <b>효율성</b> — 추정값이 적게 흔들림(작은 분산). ③ <b>일치성</b> — n이 커지면 진짜 값으로 수렴.</p>
       <p style="margin:0"><b style="color:var(--hot)">핵심 직관</b>: 한 번의 추정값이 맞느냐가 아니라, <b>그 추정 방법이 만드는 분포</b>(9장 표본분포!)가 진짜 값을 어떻게 겨냥하느냐가 중요해요.</p>
@@ -74,9 +75,11 @@
     <h2>표본분산은 왜 n이 아니라 n−1로 나눌까</h2>
     <p class="lead">분산을 추정할 때 흩어짐을 <b>표본평균</b> 기준으로 재요. 그런데 표본평균은 <b>그 표본에 딱 맞춰</b> 있어서, 진짜 평균보다 흩어짐을 <b>덜</b> 보이게 해요. 그래서 n으로 나누면 분산이 <b>항상 조금 작게</b> 나와요(편향). n−1로 나누면 딱 보정돼요.</p>
     <div class="ctrl"><label>표본 크기 n</label><input type="range" id="n" min="2" max="30" value="3"><span class="val" id="nv">3</span></div>
+    <p class="note" style="margin:6px 0 0;color:var(--q)">👆 직접 해보기: n을 <b>2~3</b>으로 내려보세요. ÷n(빨강)과 ÷(n−1)(초록)이 확 벌어져요. n을 키우면 둘이 거의 붙죠(편향이 작아져서).</p>
     <div id="info2" class="callout v" style="margin-top:8px"></div>
     <div class="chart-wrap" id="besChart" style="margin-top:10px"></div>
     <p class="note" style="margin-top:12px">→ n이 작을수록 편향이 커요(n=2면 절반!). n−1로 나누면 어떤 n에서도 평균이 진짜 <b>분산</b>에 딱 맞죠 — <b>분산</b>의 불편추정량이에요. 계산기·엑셀의 표본분산·표준편차가 n−1을 쓰는 관행도 여기서 나와요.</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">왜 하필 "1"을 뺄까: 흩어짐을 잴 때 진짜 평균 대신 <b>표본평균</b>을 먼저 써버려요. 그 한 번 때문에 자유롭게 움직이는 값이 n개가 아니라 <b>n−1개</b>가 된 셈이라(이걸 자유도라 불러요), 딱 n−1로 나눠요.</p>
     <p class="note" style="margin-top:8px;color:var(--faint)">단, 엄밀히는 √를 씌운 <b>표준편차 s</b>는 n−1을 써도 여전히 아주 살짝 낮게 편향돼요(불편인 건 분산 s²). 보통 무시할 만큼 작아요.</p>
   </section>
 

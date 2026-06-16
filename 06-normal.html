@@ -112,6 +112,13 @@ function normalCurve(mu, sigma, opts={}){
     d+=`L${px(b).toFixed(1)},${(H-padB).toFixed(1)}Z`;
     g+=`<path d="${d}" fill="var(--v)" opacity="0.28"/>`;
   }
+  // 임의 구간 음영 [a,b] (꼬리 면적 시각화용)
+  if(opts.shadeInt){ const a=Math.max(lo,opts.shadeInt[0]), b=Math.min(hi,opts.shadeInt[1]);
+    if(b>a){ let d=`M${px(a).toFixed(1)},${(H-padB).toFixed(1)}`;
+      for(let i=0;i<=N;i++){ const x=lo+(hi-lo)*i/N; if(x>=a&&x<=b) d+=`L${px(x).toFixed(1)},${py(npdf(x,mu,sigma)).toFixed(1)}`; }
+      d+=`L${px(b).toFixed(1)},${(H-padB).toFixed(1)}Z`;
+      g+=`<path d="${d}" fill="${opts.shadeColor||'var(--hot)'}" opacity="0.32"/>`; }
+  }
   // 곡선
   g+=`<path d="${pts.map((p,i)=>(i?'L':'M')+px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join('')}" fill="none" stroke="var(--q)" stroke-width="2.5"/>`;
   g+=`<line class="axis" x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}"/>`;
@@ -168,11 +175,14 @@ document.getElementById('curve0').innerHTML = normalCurve(0, 1, {aria:'정규분
     // x보다 클(드물) 확률: 1 - CDF(z). 표준정규 CDF 근사(적분)
     let cdf=0; const dz=0.002; for(let t=-6;t<z;t+=dz) cdf+=npdf(t,0,1)*dz;
     const tail=(1-cdf)*100, twoSide=2*Math.min(tail,100-tail);
-    document.getElementById('curve3').innerHTML = normalCurve(mu, sig, {W:540, xval:x, marks:false});
+    // 값보다 더 극단적인 쪽(꼬리)을 음영 — "상위 X%"가 곡선 어디인지 눈으로
+    const shadeInt = z>=0 ? [x, mu+4*sig] : [mu-4*sig, x];
+    document.getElementById('curve3').innerHTML = normalCurve(mu, sig, {W:540, xval:x, marks:false, shadeInt, shadeColor:'var(--hot)'});
     document.getElementById('info3').className='callout';
     document.getElementById('info3').innerHTML =
       `<div class="ttl" style="color:var(--good)">z = (${x} − 50) ÷ 10 = <span class="big">${z.toFixed(2)}</span></div>
-       <p style="margin:6px 0 0">평균에서 <b>${Math.abs(z).toFixed(2)}σ</b> ${z>=0?'위':'아래'}. 이 값보다 <b>큰</b> 경우(<b>한쪽 꼬리</b>) = 상위 <b>${tail.toFixed(1)}%</b>. ${Math.abs(z)>=2?'한쪽만 2.3% 미만 — 꽤 드문 값!':Math.abs(z)>=1?'평균보다 다소 높아요.':'흔한 범위.'} <span style="color:var(--faint)">(양쪽 끝 합치면 ${twoSide.toFixed(1)}% — Step 2의 "±2σ 밖 5%"는 이 양측 기준이에요.)</span></p>`;
+       <p style="margin:6px 0 0">평균에서 <b>${Math.abs(z).toFixed(2)}σ</b> ${z>=0?'위':'아래'}. <b>주황 꼬리 넓이</b> = 이 값보다 더 ${z>=0?'높은':'낮은'} 경우(<b>한쪽 꼬리</b>) = <b>${(z>=0?tail:100-tail).toFixed(1)}%</b>. ${Math.abs(z)>=2?'한쪽만 2.3% 안팎 — 꽤 드문 값!':Math.abs(z)>=1?'평균에서 좀 떨어졌어요.':'흔한 범위.'}</p>
+       <p style="margin:6px 0 0;color:var(--faint)">양쪽 끝을 다 합치면 ${twoSide.toFixed(1)}%예요 — Step 2의 "±2σ 밖 5%"가 바로 이 <b>양쪽</b> 기준이고요. (한쪽만 보면 단측, 양쪽 보면 양측.)</p>`;
   }
   document.getElementById('xval').oninput=e=>{ x=+e.target.value; document.getElementById('xvalv').textContent=x; render(); };
   render();

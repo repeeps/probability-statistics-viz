@@ -67,6 +67,7 @@
     </div>
     <div id="info2" class="callout v"></div>
     <div class="chart-wrap" id="rtmChart" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:8px;color:var(--q)">👀 그림: 점선 대각선은 "1·2차가 똑같을 때" 자리예요. 1차 상위 10%(주황)의 평균은 회색 점(대각선 위)에 있어야 할 것 같지만, 실제 2차 평균은 <b>빨간 화살표만큼 아래로(초록 점)</b> 내려와요 — 이게 평균으로의 회귀예요.</p>
     <p class="note" style="margin-top:12px">→ 이게 "<b>혼냈더니 다음엔 잘하더라</b>(사실은 회귀), 칭찬했더니 다음엔 못하더라"의 정체예요. 극단적 결과 뒤의 변화를 <b>개입의 효과로 착각</b>하면 큰 오판이에요. 그래서 <b>대조군</b>이 필요해요(개입 안 한 그룹도 똑같이 회귀하니까).</p>
   </section>
 
@@ -111,6 +112,14 @@ function gauss(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.r
   const A={ sm:[81,87], lg:[192,263] }, B={ sm:[234,270], lg:[55,80] };
   const rate=x=>x[0]/x[1];
   const aAll=[A.sm[0]+A.lg[0], A.sm[1]+A.lg[1]], bAll=[B.sm[0]+B.lg[0], B.sm[1]+B.lg[1]];
+  // 표본 구성(작은:큰) 가로 막대 — 누가 어떤 난이도를 많이 맡았나를 눈으로
+  function mixBar(label, smN, lgN){ const tot=smN+lgN, smPct=smN/tot*100;
+    return `<div style="display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;margin:5px 0">
+      <div style="font-weight:700;font-size:13px;text-align:right">${label}</div>
+      <div style="display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid var(--line)">
+        <div style="width:${smPct.toFixed(1)}%;background:var(--q);display:flex;align-items:center;justify-content:center;font-size:10px;color:#08131f;font-family:'JetBrains Mono',monospace">작은 ${smN}</div>
+        <div style="flex:1;background:var(--k);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-family:'JetBrains Mono',monospace">큰 ${lgN}</div>
+      </div></div>`; }
   let view='split';
   function render(){
     let bars='';
@@ -132,6 +141,9 @@ function gauss(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.r
         `<div class="ttl" style="color:var(--k)">합산: B 승 🏆 — 역설!</div>
          <p style="margin:0">전체 A ${(rate(aAll)*100).toFixed(0)}% &lt; B ${(rate(bAll)*100).toFixed(0)}%. 두 그룹 모두 A가 이겼는데 합치면 B가 이겨요. A가 어려운 큰 결석(${A.lg[1]}명)을 훨씬 많이 맡았기 때문이에요.</p>`;
     }
+    bars += `<div class="legend" style="margin:14px 0 4px">표본 구성 — 각 치료가 맡은 환자(<span style="color:var(--q)">청록=작은·쉬움</span>, <span style="color:var(--k)">빨강=큰·어려움</span>)</div>`;
+    bars += mixBar('치료 A', A.sm[1], A.lg[1]);
+    bars += mixBar('치료 B', B.sm[1], B.lg[1]);
     document.getElementById('simpBars').innerHTML = bars;
   }
   function setV(v){ view=v;
@@ -157,12 +169,18 @@ function gauss(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.r
     // y=x 대각선(점수 변화 없음 기준선)
     g+=`<g clip-path="url(#rtmclip)">`;
     g+=`<line x1="${px(MIN).toFixed(1)}" y1="${py(MIN).toFixed(1)}" x2="${px(MAX).toFixed(1)}" y2="${py(MAX).toFixed(1)}" stroke="var(--faint)" stroke-width="1" stroke-dasharray="4,4"/>`;
-    pts.forEach((p,i)=>{ const top=topSet.has(i); g+=`<circle cx="${px(p[0]).toFixed(1)}" cy="${py(p[1]).toFixed(1)}" r="${top?4:3}" fill="${top?'var(--hot)':'var(--slate)'}" opacity="${top?0.95:0.4}"/>`; });
-    // 상위그룹 평균 마커: 1차(세로) → 2차(가로)
-    g+=`<line x1="${px(m1).toFixed(1)}" y1="${padT}" x2="${px(m1).toFixed(1)}" y2="${H-padB}" stroke="var(--hot)" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.8"/>`;
-    g+=`<line x1="${padL}" y1="${py(m2).toFixed(1)}" x2="${W-padR}" y2="${py(m2).toFixed(1)}" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.8"/>`;
+    pts.forEach((p,i)=>{ const top=topSet.has(i); g+=`<circle cx="${px(p[0]).toFixed(1)}" cy="${py(p[1]).toFixed(1)}" r="${top?4:3}" fill="${top?'var(--hot)':'var(--slate)'}" opacity="${top?0.9:0.32}"/>`; });
+    // 상위 10%의 평균이 '대각선(변화없음)'에서 아래로 내려오는 화살표 = 평균으로의 회귀
+    const xp=px(m1), yExp=py(m1), yAct=py(m2);   // yExp: 변화 없을 때 위치(대각선), yAct: 실제 2차 평균
+    g+=`<line x1="${xp.toFixed(1)}" y1="${padT}" x2="${xp.toFixed(1)}" y2="${(H-padB).toFixed(1)}" stroke="var(--hot)" stroke-width="1" stroke-dasharray="2,3" opacity="0.45"/>`;
+    g+=`<line x1="${xp.toFixed(1)}" y1="${yExp.toFixed(1)}" x2="${xp.toFixed(1)}" y2="${(yAct-7).toFixed(1)}" stroke="var(--k)" stroke-width="3"/>`;
+    g+=`<polygon points="${(xp-5).toFixed(1)},${(yAct-8).toFixed(1)} ${(xp+5).toFixed(1)},${(yAct-8).toFixed(1)} ${xp.toFixed(1)},${(yAct-1).toFixed(1)}" fill="var(--k)"/>`;
+    g+=`<circle cx="${xp.toFixed(1)}" cy="${yExp.toFixed(1)}" r="5" fill="var(--faint)"/>`;
+    g+=`<circle cx="${xp.toFixed(1)}" cy="${yAct.toFixed(1)}" r="5" fill="var(--good)"/>`;
     g+=`</g>`;
-    g+=`<text class="axislabel" x="${(padL+W-padR)/2}" y="${H-8}" text-anchor="middle">1차 점수 (상위 10% = 주황 세로선)</text>`;
+    g+=`<text class="axislabel" x="${(xp+9).toFixed(1)}" y="${(yExp+4).toFixed(1)}" text-anchor="start" fill="var(--faint)">1차 평균(운 좋았음)</text>`;
+    g+=`<text class="axislabel" x="${(xp+9).toFixed(1)}" y="${(yAct+4).toFixed(1)}" text-anchor="start" fill="var(--good)">2차 평균 ↓ 회귀</text>`;
+    g+=`<text class="axislabel" x="${(padL+W-padR)/2}" y="${H-8}" text-anchor="middle">1차 점수 →</text>`;
     g+=`<text class="axislabel" x="14" y="${(padT+H-padB)/2}" text-anchor="middle" transform="rotate(-90 14 ${(padT+H-padB)/2})">2차 점수</text>`;
     return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="평균으로의 회귀 산점도" style="max-width:100%;display:block">${g}</svg>`;
   }

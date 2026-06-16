@@ -33,7 +33,7 @@
   <section class="panel show" data-panel="0">
     <span class="kicker" style="color:var(--hot)">Step 00 — Interval Estimate</span>
     <h2>점추정 ± 오차범위 = 신뢰구간</h2>
-    <p class="lead">표본에서 p̂를 구하면(9장), 그 둘레로 <b>표준오차 SE</b>만큼 여유를 둔 구간을 만들어요. 95% 신뢰구간은 보통 <b>p̂ ± 1.96·SE</b>예요. "지지율 52%, 95% 신뢰구간 [49%, 55%]"처럼요.</p>
+    <p class="lead">표본에서 p̂를 구하면(9장), 그 둘레로 <b>표준오차 SE</b>(표본마다 p̂가 흔들리는 폭, 9장)만큼 여유를 둔 구간을 만들어요. 95% 신뢰구간은 보통 <b>p̂ ± 1.96·SE</b>예요. "지지율 52%, 95% 신뢰구간 [49%, 55%]"처럼요.</p>
     <div class="callout" style="margin-top:6px">
       <p style="margin:0 0 8px"><b style="color:var(--q)">왜 1.96인가</b>: CLT(8장) 덕분에 표본통계량은 정규분포를 따르고, 정규분포는 중심 ±1.96σ 안에 <b>95%</b>가 들어와요(6장). 그 폭을 그대로 빌려 쓰는 거예요.</p>
       <p style="margin:0"><b style="color:var(--hot)">구간은 표본에서 나와요</b>: 우리는 진짜 값을 모르니, <b>한 번 뽑은 표본</b>으로 구간을 만들어 진짜 값을 "가두려" 시도하는 거예요.</p>
@@ -71,11 +71,18 @@
   <!-- STEP 3 -->
   <section class="panel" data-panel="3">
     <span class="kicker" style="color:var(--good)">Step 03 — Misreadings</span>
-    <h2>흔한 오해 4가지</h2>
-    <div class="wrongbox"><b style="color:var(--k)">✗ "이 구간에 진짜 값이 95% 확률로 있다."</b><br><span class="legend">진짜 값은 고정된 상수예요. 이미 만든 구간은 담았거나 아니거나 둘 중 하나. 95%는 <b>방법의 장기 성공률</b>이에요.</span></div>
-    <div class="wrongbox"><b style="color:var(--k)">✗ "표본의 95%가 이 구간 안에 든다."</b><br><span class="legend">구간은 <b>모수</b>(진짜 평균·비율)에 관한 거지, 개별 데이터의 95%를 담는 범위가 아니에요.</span></div>
-    <div class="wrongbox"><b style="color:var(--k)">✗ "95% 구간이 99% 구간보다 좋다."</b><br><span class="legend">더 좁을 뿐, 더 낫진 않아요. 신뢰수준↑ → 폭↑ → 놓칠 확률↓. 목적에 따라 고르는 거예요.</span></div>
-    <div class="wrongbox"><b style="color:var(--k)">✗ "구간이 겹치면 차이가 없다 / 안 겹치면 있다."</b><br><span class="legend">겹침 여부로 차이를 판정하는 건 부정확해요 — 그건 다음 12장 가설검정의 일.</span></div>
+    <h2>먼저 맞는 해석, 그다음 흔한 오해</h2>
+    <div class="callout good">
+      <div class="ttl" style="color:var(--good)">✓ 한 문장으로 맞는 해석</div>
+      <p style="margin:0">"이 <b>방법</b>으로 구간을 계속 만들면, 그중 약 <b>95%</b>가 진짜 값을 담는다." 이 한 문장이 전부예요. 아래는 이걸 헷갈리는 흔한 4가지.</p>
+    </div>
+    <div class="wrongbox" style="margin-top:10px"><b style="color:var(--k)">✗ 가장 흔한 오해: "이 구간에 진짜 값이 95% 확률로 있다."</b><br><span class="legend">진짜 값은 고정된 상수예요. 이미 만든 구간은 담았거나 아니거나 둘 중 하나. 95%는 <b>방법의 장기 성공률</b>이에요. (위 ✓ 문장이 정답.)</span></div>
+    <details style="margin-top:8px">
+      <summary style="cursor:pointer;color:var(--muted);font-size:13px">그 밖의 오해 3가지 더 보기 ▾</summary>
+      <div class="wrongbox" style="margin-top:8px"><b style="color:var(--k)">✗ "표본의 95%가 이 구간 안에 든다."</b><br><span class="legend">구간은 <b>모수</b>(진짜 평균·비율)에 관한 거지, 개별 데이터의 95%를 담는 범위가 아니에요.</span></div>
+      <div class="wrongbox"><b style="color:var(--k)">✗ "95% 구간이 99% 구간보다 좋다."</b><br><span class="legend">더 좁을 뿐, 더 낫진 않아요. 신뢰수준↑ → 폭↑ → 놓칠 확률↓. 목적에 따라 고르는 거예요.</span></div>
+      <div class="wrongbox"><b style="color:var(--k)">✗ "구간이 겹치면 차이가 없다 / 안 겹치면 있다."</b><br><span class="legend">겹침 여부로 차이를 판정하는 건 부정확해요 — 그건 다음 12장 가설검정의 일.</span></div>
+    </details>
     <div class="callout good" style="margin-top:14px">
       <p style="margin:0"><b>신뢰구간과 가설검정은 동전의 양면</b>이에요. "95% 구간이 어떤 값을 포함하지 않는다"는 "그 값을 5% 수준에서 기각한다"와 같아요. 다음 <b>12장</b>에서 p-value로 이 판단을 정식화해요.</p>
     </div>
@@ -90,7 +97,7 @@
 VZ.mountTopnav('#topnav', 'CH 11 · 신뢰구간');
 VZ.setupStepper();
 
-// ---------- STEP 1 : 60개 구간으로 보는 "95%의 의미" ----------
+// ---------- STEP 1 : 100개 구간으로 보는 "95%의 의미" ----------
 (function(){
   const Z={90:1.645,95:1.96,99:2.576};
   const P=0.52, n=300, M=100;     // 진짜 지지율, 표본 크기, 구간 개수
@@ -120,7 +127,7 @@ VZ.setupStepper();
     g+=`<text x="${padL}" y="${H-8}" text-anchor="start" class="axislabel">${((lo)*100).toFixed(0)}%</text>`;
     g+=`<text x="${W-padR}" y="${H-8}" text-anchor="end" class="axislabel">${((hi)*100).toFixed(0)}%</text>`;
     document.getElementById('ciChart').innerHTML =
-      `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="60개 신뢰구간" style="max-width:100%;display:block">${g}</svg>`;
+      `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="100개 신뢰구간" style="max-width:100%;display:block">${g}</svg>`;
     const miss=M-hit;
     document.getElementById('info1').innerHTML =
       `<div class="ttl" style="color:var(--q)">${level}% 신뢰구간 · ${M}번 반복</div>

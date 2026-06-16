@@ -68,12 +68,14 @@
       <button class="btn" id="f100">+100</button><button class="btn" id="f1000">+1000</button>
       <button class="btn" id="freset" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">↺ 리셋</button>
     </div>
+    <p class="note" style="margin:0 0 8px;color:var(--q)">👀 어디를 볼까: <b>왼쪽 ①</b>은 선이 0.5로 모여요. <b>오른쪽 ②</b>는 검은 선이 회색 깔때기 안에서 멋대로 떠돌되 <b>0으로 안 돌아와요</b>. 회색은 "대략 이 폭으로 흔들린다"는 <b>평균적 크기</b>일 뿐(반드시 그 안에 든다는 보장선이 아니에요).</p>
     <div class="twocol">
       <div><div class="legend" style="margin-bottom:4px">① 앞면 <b>비율</b> → 0.5 (수렴)</div><div id="chartA"></div></div>
       <div><div class="legend" style="margin-bottom:4px">② 앞면 수 − 절반 · 회색 = ±√n 전형적 폭 (점점 벌어짐)</div><div id="chartB"></div></div>
     </div>
     <div id="info2" class="callout v" style="margin-top:12px"></div>
-    <p class="note" style="margin-top:12px">→ <b>도박사 오류</b>: "앞면이 많이 나왔으니 이제 뒷면이 나와 균형을 맞출 차례" — <b>틀렸어요!</b> 핵심 한 줄: <b>비율 − 0.5 = (개수차) ÷ n</b>. 분자(개수차 ②)는 √n 규모로 천천히 커지지만, 분모 n이 훨씬 빨리 커지니 비율(①)은 0.5로 끌려가요. 개수 차이는 0으로 <b>되돌려지지 않아요</b> — 동전은 과거를 기억해 빚을 갚지 않거든요. 비율 수렴 ≠ 개수 보정.</p>
+    <p class="note" style="margin-top:12px">→ <b>도박사 오류</b>: "앞면이 많이 나왔으니 이제 뒷면이 나와 균형을 맞출 차례" — <b>틀렸어요!</b> 비율(①)은 0.5로 모이지만, 개수 차이(②)는 0으로 <b>되돌려지지 않아요</b>. 동전은 과거를 기억해 빚을 갚지 않거든요. <b>비율 수렴 ≠ 개수 보정.</b></p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">💡 왜 비율만 모일까: "비율 − 0.5 = (개수차) ÷ n"이거든요. 개수차(②)는 √n 규모로 <b>천천히</b> 커지지만, 나누는 n은 <b>훨씬 빨리</b> 커지니 그 몫인 비율은 0으로 눌려 0.5에 붙어요.</p>
   </section>
 
   <!-- STEP 3 -->
