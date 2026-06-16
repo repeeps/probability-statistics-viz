@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06 정규분포 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .big{font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:800;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 2 · Chapter 06</div>
+    <h1>정규분포 — 세상에서 가장 흔한 종 모양</h1>
+    <p class="intro">키, 시험 점수, 측정 오차, 공정의 편차… 자연과 사회 곳곳에서 같은 <b>종 모양</b>이 나와요. 이게 <b>정규분포</b>예요. 평균 <b>μ</b>(중심)와 표준편차 <b>σ</b>(폭) 두 숫자로 완전히 결정되고, "데이터의 몇 %가 어디에 있는지"를 정확히 알려주죠.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 종 모양</button>
+    <button data-s="1">01 · μ와 σ</button>
+    <button data-s="2">02 · 68-95-99.7</button>
+    <button data-s="3">03 · z-점수·정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — The Bell Curve</span>
+    <h2>가운데가 두껍고 양끝이 얇은 모양</h2>
+    <p class="lead">정규분포는 <b>평균 근처에 가장 몰려 있고</b>, 멀어질수록 급격히 드물어지는 좌우대칭 종 모양이에요. 평균에서 멀리 떨어진 값(아주 크거나 작은)은 가능하지만 희귀하죠.</p>
+    <div id="curve0"></div>
+    <div class="callout" style="margin-top:12px">
+      <p style="margin:0"><b style="color:var(--q)">왜 이렇게 흔할까?</b> "여러 작은 무작위 요인이 <b>더해지면</b>" 결과가 정규분포로 모여요(키 = 수많은 유전·환경 요인의 합). 이 마법이 <b>중심극한정리</b>(8장)이고, 그래서 정규분포가 통계의 중심에 있어요.</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 정규분포는 <b>μ(어디에 중심)</b>와 <b>σ(얼마나 퍼짐)</b> 딱 두 숫자면 완전히 그려져요. 다음 스텝에서 직접 움직여봐요.</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">* 물론 <b>모든 게 정규는 아니에요</b> — 소득·도시인구처럼 곱해지거나 극단이 잦은 것은 한쪽으로 긴 꼬리(멱법칙 등) 모양이에요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — μ and σ</span>
+    <h2>μ는 위치, σ는 폭</h2>
+    <p class="lead"><b>μ(평균)</b>를 바꾸면 종이 <b>좌우로 이동</b>하고, <b>σ(표준편차)</b>를 바꾸면 <b>넓고 낮게/좁고 높게</b> 변해요(전체 넓이는 항상 1로 유지!). 두 숫자만으로 모든 정규분포를 만들 수 있어요.</p>
+    <div class="ctrl"><label>평균 μ</label><input type="range" id="mu" min="-30" max="30" value="0"><span class="val" id="muv">0.0</span></div>
+    <div class="ctrl"><label>표준편차 σ</label><input type="range" id="sig" min="5" max="40" value="15"><span class="val" id="sigv">1.5</span></div>
+    <div id="curve1"></div>
+    <p class="note" style="margin-top:12px">→ σ가 작으면 평균 근처에 빽빽이(정밀·일관), 크면 넓게 흩어져요(변동 큼). μ는 "어디", σ는 "얼마나 흔들리나". 넓이는 늘 1 — 좁아지면 높아지고 넓어지면 낮아지죠.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — The 68-95-99.7 Rule</span>
+    <h2>±1σ 안에 68%, ±2σ 안에 95%</h2>
+    <p class="lead">정규분포의 강력한 규칙: 평균에서 <b>±1σ 안에 약 68%</b>, <b>±2σ 안에 약 95%</b>, <b>±3σ 안에 약 99.7%</b>의 데이터가 들어와요. σ만 알면 "얼마나 흔한 값인지" 바로 판단할 수 있어요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="k1">±1σ</button>
+      <button class="btn" id="k2" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">±2σ</button>
+      <button class="btn" id="k3" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">±3σ</button>
+    </div>
+    <div id="curve2"></div>
+    <div id="info2" class="callout v" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 그래서 "<b>2σ 넘게 벗어난 값</b>"은 (양쪽 합쳐) 5%도 안 되는 드문 일이에요(이게 나중에 "유의수준 5%"·이상치 판단의 뿌리). 면적 = 확률 — 곡선 아래 넓이가 곧 "그 범위에 있을 확률"이에요.</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">정확히는 68.27 / 95.45 / 99.73% — "68-95-99.7"은 외우기 쉬운 반올림이에요.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — z-score · Recap</span>
+    <h2>z-점수: "평균에서 몇 σ 떨어졌나"</h2>
+    <p class="lead">어떤 값이 평균에서 얼마나 특이한지는 <b>z = (값 − μ) ÷ σ</b> 로 재요. 단위에 상관없이(키든 점수든) "몇 σ 떨어졌는가"로 통일 — 서로 다른 분포를 비교할 수 있죠.</p>
+    <div class="ctrl"><label>값 (μ=50, σ=10)</label><input type="range" id="xval" min="20" max="80" value="65"><span class="val" id="xvalv">65</span></div>
+    <div id="curve3" style="margin:8px 0"></div>
+    <div id="info3" class="callout"></div>
+    <div class="twocol" style="margin-top:14px">
+      <div class="callout q"><div class="ttl">정규분포 = μ, σ</div><p style="margin:0">중심 μ, 폭 σ 둘이면 끝. 68-95-99.7로 "흔함/드묾"을 즉시 판단.</p></div>
+      <div class="callout good"><div class="ttl">왜 어디에나?</div><p style="margin:0">많은 작은 요인의 <b>합</b>은 정규분포로 — 다음 8장 CLT가 그 이유.</p></div>
+    </div>
+    <p class="note" style="margin-top:16px">→ 다음 PART 3: <b>7장 큰 수의 법칙</b>과 <b>8장 중심극한정리</b> — "왜 표본평균은 정규분포인가", 통계 추론의 토대를 놓아요.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 곡선·면적은 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 06 · 정규분포');
+VZ.setupStepper();
+const npdf = VZ.ST.normalPdf;
+
+// 표준정규 ±k 면적 (수치적분)
+function areaWithin(k){ let a=0; const dz=0.002; for(let z=-k;z<k;z+=dz) a+=npdf(z,0,1)*dz; return a; }
+
+// 정규곡선 SVG (옵션: shadeK=±kσ 음영, marks=평균/σ 눈금, xval=수직선)
+function normalCurve(mu, sigma, opts={}){
+  const W=opts.W||540, H=opts.H||210, padL=14, padR=14, padT=14, padB=26;
+  const lo=opts.xlo!=null?opts.xlo:mu-4*sigma, hi=opts.xhi!=null?opts.xhi:mu+4*sigma, plotW=W-padL-padR;
+  const px=x=>padL+(x-lo)/(hi-lo)*plotW;
+  const peak=opts.yPeak!=null?opts.yPeak:npdf(mu,mu,sigma);   // 고정 y스케일이면 σ 변화가 봉우리 높이로 드러남
+  const py=d=>H-padB-(d/peak)*(H-padT-padB);
+  const N=160, pts=[]; for(let i=0;i<=N;i++){ const x=lo+(hi-lo)*i/N; pts.push([x, npdf(x,mu,sigma)]); }
+  let g='';
+  // 음영 영역 (μ±kσ)
+  if(opts.shadeK){ const a=mu-opts.shadeK*sigma, b=mu+opts.shadeK*sigma;
+    let d=`M${px(a).toFixed(1)},${(H-padB).toFixed(1)}`;
+    for(let i=0;i<=N;i++){ const x=lo+(hi-lo)*i/N; if(x>=a&&x<=b) d+=`L${px(x).toFixed(1)},${py(npdf(x,mu,sigma)).toFixed(1)}`; }
+    d+=`L${px(b).toFixed(1)},${(H-padB).toFixed(1)}Z`;
+    g+=`<path d="${d}" fill="var(--v)" opacity="0.28"/>`;
+  }
+  // 곡선
+  g+=`<path d="${pts.map((p,i)=>(i?'L':'M')+px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join('')}" fill="none" stroke="var(--q)" stroke-width="2.5"/>`;
+  g+=`<line class="axis" x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}"/>`;
+  // μ, μ±σ 눈금
+  if(opts.marks!==false){
+    [[mu,'μ','var(--hot)'],[mu-sigma,'−σ','var(--faint)'],[mu+sigma,'+σ','var(--faint)']].forEach(([x,lab,col])=>{
+      g+=`<line x1="${px(x).toFixed(1)}" y1="${py(npdf(x,mu,sigma)).toFixed(1)}" x2="${px(x).toFixed(1)}" y2="${H-padB}" stroke="${col}" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+      g+=`<text x="${px(x).toFixed(1)}" y="${H-padB+14}" text-anchor="middle" fill="${col}" font-size="10" font-family="JetBrains Mono">${lab}</text>`;
+    });
+  }
+  // xval 수직선
+  if(opts.xval!=null){ g+=`<line x1="${px(opts.xval).toFixed(1)}" y1="${padT}" x2="${px(opts.xval).toFixed(1)}" y2="${H-padB}" stroke="var(--good)" stroke-width="2"/>`; }
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.aria||'정규분포 곡선'}" style="max-width:100%;display:block">${g}</svg>`;
+}
+
+// STEP 0
+document.getElementById('curve0').innerHTML = normalCurve(0, 1, {aria:'정규분포 종 모양'});
+
+// STEP 1
+(function(){
+  let mu=0, sig=1.5;
+  const FRAME={xlo:-7, xhi:7, yPeak:npdf(0,0,0.5)};   // 고정 프레임 → σ 커지면 납작+넓게(넓이 1 보존) 보임
+  function render(){ document.getElementById('curve1').innerHTML = normalCurve(mu, sig, {W:540, ...FRAME}); }
+  document.getElementById('mu').oninput=e=>{ mu=e.target.value/10; document.getElementById('muv').textContent=mu.toFixed(1); render(); };
+  document.getElementById('sig').oninput=e=>{ sig=e.target.value/10; document.getElementById('sigv').textContent=sig.toFixed(1); render(); };
+  render();
+})();
+
+// STEP 2
+(function(){
+  let k=1;
+  function render(){
+    document.getElementById('curve2').innerHTML = normalCurve(0, 1, {shadeK:k, marks:k===1});
+    const pct=areaWithin(k)*100;
+    document.getElementById('info2').innerHTML =
+      `<div class="ttl" style="color:var(--v)">±${k}σ 안의 면적 = <span class="big">${pct.toFixed(1)}%</span></div>
+       <p style="margin:0">${k===1?'평균±1σ 안에 약 68% — "보통" 범위.':k===2?'평균±2σ 안에 약 95% — 이 밖은 드문 5%.':'평균±3σ 안에 약 99.7% — 이 밖은 0.3%, 거의 안 일어남.'}</p>`;
+  }
+  function set(kk){ k=kk;
+    [['k1',1],['k2',2],['k3',3]].forEach(([id,v])=>{ document.getElementById(id).style.cssText = v===kk?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render();
+  }
+  document.getElementById('k1').onclick=()=>set(1);
+  document.getElementById('k2').onclick=()=>set(2);
+  document.getElementById('k3').onclick=()=>set(3);
+  set(1);
+})();
+
+// STEP 3
+(function(){
+  const mu=50, sig=10; let x=65;
+  function render(){
+    const z=(x-mu)/sig;
+    // x보다 클(드물) 확률: 1 - CDF(z). 표준정규 CDF 근사(적분)
+    let cdf=0; const dz=0.002; for(let t=-6;t<z;t+=dz) cdf+=npdf(t,0,1)*dz;
+    const tail=(1-cdf)*100, twoSide=2*Math.min(tail,100-tail);
+    document.getElementById('curve3').innerHTML = normalCurve(mu, sig, {W:540, xval:x, marks:false});
+    document.getElementById('info3').className='callout';
+    document.getElementById('info3').innerHTML =
+      `<div class="ttl" style="color:var(--good)">z = (${x} − 50) ÷ 10 = <span class="big">${z.toFixed(2)}</span></div>
+       <p style="margin:6px 0 0">평균에서 <b>${Math.abs(z).toFixed(2)}σ</b> ${z>=0?'위':'아래'}. 이 값보다 <b>큰</b> 경우(<b>한쪽 꼬리</b>) = 상위 <b>${tail.toFixed(1)}%</b>. ${Math.abs(z)>=2?'한쪽만 2.3% 미만 — 꽤 드문 값!':Math.abs(z)>=1?'평균보다 다소 높아요.':'흔한 범위.'} <span style="color:var(--faint)">(양쪽 끝 합치면 ${twoSide.toFixed(1)}% — Step 2의 "±2σ 밖 5%"는 이 양측 기준이에요.)</span></p>`;
+  }
+  document.getElementById('xval').oninput=e=>{ x=+e.target.value; document.getElementById('xvalv').textContent=x; render(); };
+  render();
+})();
+</script>
+</body>
+</html>
