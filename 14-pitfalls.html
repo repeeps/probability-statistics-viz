@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>14 통계의 함정 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+  .check{list-style:none; padding:0; margin:8px 0;}
+  .check li{padding:7px 0 7px 26px; position:relative; border-bottom:1px solid var(--line); font-size:14px;}
+  .check li::before{content:"?"; position:absolute; left:0; top:7px; width:18px; height:18px; line-height:18px; text-align:center; border-radius:50%; background:var(--q); color:#0b1020; font-weight:700; font-size:11px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 5 · Chapter 14 · 마지막</div>
+    <h1>통계의 함정 — 숫자에 속지 않는 법</h1>
+    <p class="intro">통계는 거짓말하지 않아요. <b>우리가 잘못 읽을</b> 뿐이죠. 마지막 장에서는 똑똑한 사람도 빠지는 함정들을 모았어요: <b>심슨의 역설</b>, <b>평균으로의 회귀</b>, 그리고 생존자 편향·도박사 오류까지. 앞 13장에서 배운 도구로 이 함정들을 꿰뚫어 봐요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 직관의 배신</button>
+    <button data-s="1">01 · 심슨의 역설</button>
+    <button data-s="2">02 · 평균으로의 회귀</button>
+    <button data-s="3">03 · 종합 + 체크리스트</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — When Intuition Fails</span>
+    <h2>데이터는 맞는데 결론이 틀린다</h2>
+    <p class="lead">지금까지 확률·분포·표본·추정·검정·상관을 봤어요. 도구는 강력하지만, 같은 데이터로도 <b>읽는 방법</b>에 따라 정반대 결론이 나와요. 함정은 보통 <b>숨은 구조</b>(가려진 그룹·선택·시간)에서 와요.</p>
+    <div class="callout" style="margin-top:6px">
+      <p style="margin:0 0 8px"><b style="color:var(--q)">이 장의 함정들</b>: ① <b>심슨의 역설</b>(그룹을 합치면 추세가 뒤집힘) ② <b>평균으로의 회귀</b>(극단값은 다음엔 덜 극단적) ③ <b>생존자 편향</b>(살아남은 것만 봄) ④ <b>도박사 오류</b>(독립 사건에 기억을 부여).</p>
+      <p style="margin:0"><b style="color:var(--hot)">공통 처방</b>: 평균·비율 하나로 끝내지 말고 — <b>나눠 보고, 그려 보고, "무엇이 빠졌나" 묻기</b>.</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 각각을 실제 숫자로 만져보면, 왜 직관이 무너지는지 분명해져요. 1·2단계는 직접 조작해 보세요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Simpson's Paradox</span>
+    <h2>그룹별로는 A가 이기는데, 합치면 B가 이긴다</h2>
+    <p class="lead">두 치료법 A·B의 결석 제거 성공률이에요. <b>작은 결석</b>에서도 A가 이기고, <b>큰 결석</b>에서도 A가 이겨요. 그런데 <b>합치면 B가 이겨요</b>?! 토글해서 두 시선을 비교해 보세요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="vSplit">그룹별로 보기</button>
+      <button class="btn" id="vComb" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">합쳐서 보기</button>
+    </div>
+    <div id="simpBars" style="margin-top:6px"></div>
+    <div id="info1" class="callout q" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 비밀은 <b>표본 수의 쏠림</b>이에요: A는 <b>어려운 큰 결석</b>을 주로 맡았고(성공률이 원래 낮은 그룹), B는 쉬운 작은 결석을 주로 맡았어요. 합산은 이 "어떤 그룹을 많이 했나"를 숨겨서 추세를 뒤집어요. <b>나눠 봐야</b> 진실이 보여요(13장 숨은 그룹의 끝판왕).</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Regression to the Mean</span>
+    <h2>최고 점수는 다음에 내려온다 (개입 없이도)</h2>
+    <p class="lead">실력(고정) + 그날의 운(무작위)으로 시험 점수가 정해진다고 해요. 1차에서 <b>최상위</b>를 뽑으면, 그들은 실력도 좋지만 <b>운도 좋았던</b> 사람들이라, 2차엔 운이 평범해져 점수가 <b>평균 쪽으로 내려와요</b>. 아무 처치 없이도요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="resample" style="border-color:var(--v)">↻ 새 학생들 (200명)</button>
+    </div>
+    <div id="info2" class="callout v"></div>
+    <div class="chart-wrap" id="rtmChart" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 이게 "<b>혼냈더니 다음엔 잘하더라</b>(사실은 회귀), 칭찬했더니 다음엔 못하더라"의 정체예요. 극단적 결과 뒤의 변화를 <b>개입의 효과로 착각</b>하면 큰 오판이에요. 그래서 <b>대조군</b>이 필요해요(개입 안 한 그룹도 똑같이 회귀하니까).</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Wrap-up</span>
+    <h2>남은 함정들, 그리고 마무리</h2>
+    <div class="twocol">
+      <div class="colbox"><div class="ttl" style="color:var(--k)">생존자 편향</div><p class="legend" style="margin:0">살아남은 것만 보고 결론 내기. "성공한 창업가는 다 중퇴했다" — 중퇴하고 실패한 다수는 안 보여요. 돌아오지 못한 비행기의 총알 자국은 셀 수 없죠.</p></div>
+      <div class="colbox"><div class="ttl" style="color:var(--k)">도박사 오류</div><p class="legend" style="margin:0">"앞면이 계속 나왔으니 이제 뒷면 차례" — 독립 사건은 과거를 기억 안 해요(0·7장). 비율은 수렴해도 개수는 안 맞춰져요.</p></div>
+      <div class="colbox"><div class="ttl" style="color:var(--k)">p-해킹 · 다중검정</div><p class="legend" style="margin:0">여러 가설을 마구 검정해 우연한 p&lt;0.05만 보고(12장). "20번 중 1번"의 가짜 발견.</p></div>
+      <div class="colbox"><div class="ttl" style="color:var(--k)">편향 표집</div><p class="legend" style="margin:0">표본이 모집단을 대표 못 하면 n을 키워도 <b>틀린 답에 정밀하게</b> 수렴(9·11장).</p></div>
+    </div>
+    <div class="callout good" style="margin-top:16px">
+      <div class="ttl" style="color:var(--good)">숫자를 만나면 던질 7가지 질문</div>
+      <ul class="check">
+        <li>표본은 어떻게 뽑혔나? (대표성·편향)</li>
+        <li>표본이 얼마나 큰가? (오차·표준오차)</li>
+        <li>숨은 그룹은 없나? (심슨 — 나눠 봤나)</li>
+        <li>그래프를 봤나? (곡선·이상치 — 숫자만 믿지 말기)</li>
+        <li>이게 인과인가, 상관인가? (교란·역인과)</li>
+        <li>극단값인가? (평균으로의 회귀일 수도)</li>
+        <li>몇 번이나 검정했나? (다중검정·p-해킹)</li>
+        <li>보이지 않는 실패·탈락 사례는 빠지지 않았나? (생존자 편향)</li>
+      </ul>
+    </div>
+    <p class="note" style="margin-top:16px">→ 14장을 다 봤어요. 확률의 직관에서 시작해 추론과 함정까지 — 이제 통계는 "믿거나 의심하는" 게 아니라 <b>읽고 따지는</b> 도구예요. <a href="index.html">목차로 돌아가기</a></p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 수치·시뮬은 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 14 · 통계의 함정');
+VZ.setupStepper();
+function gauss(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+// ---------- STEP 1 : 심슨의 역설 ----------
+(function(){
+  // 시나리오 수치(예시): A는 큰(어려운) 결석을 주로, B는 작은(쉬운) 결석을 주로 맡음
+  const A={ sm:[81,87], lg:[192,263] }, B={ sm:[234,270], lg:[55,80] };
+  const rate=x=>x[0]/x[1];
+  const aAll=[A.sm[0]+A.lg[0], A.sm[1]+A.lg[1]], bAll=[B.sm[0]+B.lg[0], B.sm[1]+B.lg[1]];
+  let view='split';
+  function render(){
+    let bars='';
+    if(view==='split'){
+      bars += `<div class="legend" style="margin:4px 0">작은 결석 (쉬움)</div>`;
+      bars += VZ.barRow('치료 A', rate(A.sm), {win:true, pctText:`${(rate(A.sm)*100).toFixed(0)}% (${A.sm[0]}/${A.sm[1]})`});
+      bars += VZ.barRow('치료 B', rate(B.sm), {pctText:`${(rate(B.sm)*100).toFixed(0)}% (${B.sm[0]}/${B.sm[1]})`});
+      bars += `<div class="legend" style="margin:10px 0 4px">큰 결석 (어려움)</div>`;
+      bars += VZ.barRow('치료 A', rate(A.lg), {win:true, pctText:`${(rate(A.lg)*100).toFixed(0)}% (${A.lg[0]}/${A.lg[1]})`});
+      bars += VZ.barRow('치료 B', rate(B.lg), {pctText:`${(rate(B.lg)*100).toFixed(0)}% (${B.lg[0]}/${B.lg[1]})`});
+      document.getElementById('info1').innerHTML =
+        `<div class="ttl" style="color:var(--good)">그룹별: 두 경우 모두 A 승 🏆</div>
+         <p style="margin:0">작은 결석 A ${(rate(A.sm)*100).toFixed(0)}% &gt; B ${(rate(B.sm)*100).toFixed(0)}%, 큰 결석 A ${(rate(A.lg)*100).toFixed(0)}% &gt; B ${(rate(B.lg)*100).toFixed(0)}%. 어느 환자든 A가 낫죠.</p>`;
+    } else {
+      bars += `<div class="legend" style="margin:4px 0">전체 합산</div>`;
+      bars += VZ.barRow('치료 A', rate(aAll), {pctText:`${(rate(aAll)*100).toFixed(0)}% (${aAll[0]}/${aAll[1]})`});
+      bars += VZ.barRow('치료 B', rate(bAll), {win:true, pctText:`${(rate(bAll)*100).toFixed(0)}% (${bAll[0]}/${bAll[1]})`});
+      document.getElementById('info1').innerHTML =
+        `<div class="ttl" style="color:var(--k)">합산: B 승 🏆 — 역설!</div>
+         <p style="margin:0">전체 A ${(rate(aAll)*100).toFixed(0)}% &lt; B ${(rate(bAll)*100).toFixed(0)}%. 두 그룹 모두 A가 이겼는데 합치면 B가 이겨요. A가 어려운 큰 결석(${A.lg[1]}명)을 훨씬 많이 맡았기 때문이에요.</p>`;
+    }
+    document.getElementById('simpBars').innerHTML = bars;
+  }
+  function setV(v){ view=v;
+    [['vSplit','split'],['vComb','combined']].forEach(([id,vv])=>{ document.getElementById(id).style.cssText = vv===v?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render();
+  }
+  document.getElementById('vSplit').onclick=()=>setV('split');
+  document.getElementById('vComb').onclick=()=>setV('combined');
+  setV('split');
+})();
+
+// ---------- STEP 2 : 평균으로의 회귀 ----------
+(function(){
+  const N=200, MEAN=50, MIN=5, MAX=100;
+  let data=null;
+  function gen(){ data=[]; for(let i=0;i<N;i++){ const a=MEAN+10*gauss(); data.push([a+10*gauss(), a+10*gauss()]); } }
+  function scatter(pts, topSet, m1, m2){
+    const W=560,H=300,padL=42,padR=16,padT=14,padB=34, xlo=MIN,xhi=MAX,ylo=MIN,yhi=MAX;
+    const px=x=>padL+(x-xlo)/(xhi-xlo)*(W-padL-padR), py=y=>H-padB-(y-ylo)/(yhi-ylo)*(H-padT-padB);
+    let g=`<clipPath id="rtmclip"><rect x="${padL}" y="${padT}" width="${W-padL-padR}" height="${H-padT-padB}"/></clipPath>`;
+    g+=`<line class="axis" x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}"/>`;
+    g+=`<line class="axis" x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}"/>`;
+    // y=x 대각선(점수 변화 없음 기준선)
+    g+=`<g clip-path="url(#rtmclip)">`;
+    g+=`<line x1="${px(MIN).toFixed(1)}" y1="${py(MIN).toFixed(1)}" x2="${px(MAX).toFixed(1)}" y2="${py(MAX).toFixed(1)}" stroke="var(--faint)" stroke-width="1" stroke-dasharray="4,4"/>`;
+    pts.forEach((p,i)=>{ const top=topSet.has(i); g+=`<circle cx="${px(p[0]).toFixed(1)}" cy="${py(p[1]).toFixed(1)}" r="${top?4:3}" fill="${top?'var(--hot)':'var(--slate)'}" opacity="${top?0.95:0.4}"/>`; });
+    // 상위그룹 평균 마커: 1차(세로) → 2차(가로)
+    g+=`<line x1="${px(m1).toFixed(1)}" y1="${padT}" x2="${px(m1).toFixed(1)}" y2="${H-padB}" stroke="var(--hot)" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.8"/>`;
+    g+=`<line x1="${padL}" y1="${py(m2).toFixed(1)}" x2="${W-padR}" y2="${py(m2).toFixed(1)}" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.8"/>`;
+    g+=`</g>`;
+    g+=`<text class="axislabel" x="${(padL+W-padR)/2}" y="${H-8}" text-anchor="middle">1차 점수 (상위 10% = 주황 세로선)</text>`;
+    g+=`<text class="axislabel" x="14" y="${(padT+H-padB)/2}" text-anchor="middle" transform="rotate(-90 14 ${(padT+H-padB)/2})">2차 점수</text>`;
+    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="평균으로의 회귀 산점도" style="max-width:100%;display:block">${g}</svg>`;
+  }
+  function render(){
+    const k=Math.round(N*0.1);
+    const order=[...data.keys()].sort((a,b)=>data[b][0]-data[a][0]);
+    const top=order.slice(0,k), topSet=new Set(top);
+    const bot=order.slice(N-k);
+    const m1=top.reduce((s,i)=>s+data[i][0],0)/k, m2=top.reduce((s,i)=>s+data[i][1],0)/k;
+    const b1=bot.reduce((s,i)=>s+data[i][0],0)/k, b2=bot.reduce((s,i)=>s+data[i][1],0)/k;
+    document.getElementById('rtmChart').innerHTML = scatter(data, topSet, m1, m2);
+    document.getElementById('info2').innerHTML =
+      `<div class="ttl" style="color:var(--v)">1차 상위 10%(주황)의 평균 점수</div>
+       <p style="margin:0 0 6px">1차 = <b style="color:var(--hot)">${m1.toFixed(1)}점</b> → 2차 = <b style="color:var(--good)">${m2.toFixed(1)}점</b> (전체 평균 ${MEAN}점 쪽으로 <b>${(m1-m2).toFixed(1)}점 하락</b>). 같은 사람들인데 아무 처치 없이 내려왔어요 — 1차의 좋은 운이 2차엔 안 따라줬으니까요.</p>
+       <p style="margin:0;color:var(--faint)">대칭으로, <b>하위 10%</b>는 1차 ${b1.toFixed(1)}점 → 2차 ${b2.toFixed(1)}점으로 <b>${(b2-b1).toFixed(1)}점 상승</b>해요. 둘 다 "처치 효과"가 아니라 극단값이 평균으로 돌아온 것뿐.</p>`;
+  }
+  document.getElementById('resample').onclick=()=>{ gen(); render(); };
+  gen(); render();
+})();
+</script>
+</body>
+</html>
