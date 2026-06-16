@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05 핵심 분포들 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+  .colbox h4{margin:0 0 6px; font-size:14px;}
+  table.cmp{width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;}
+  table.cmp th,table.cmp td{padding:8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top;}
+  table.cmp th{color:var(--muted); font-size:11px; text-transform:uppercase;}
+  table.cmp td:first-child{font-weight:700; white-space:nowrap; color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 2 · Chapter 05</div>
+    <h1>핵심 분포들 — 상황마다 모양이 정해져 있다</h1>
+    <p class="intro">"동전 한 번", "n번 중 성공 횟수", "1시간에 오는 손님 수" — 무작위 상황엔 자주 나타나는 <b>분포 모양</b>이 있어요. 몇 가지 핵심 분포(<b>베르누이·이항·포아송</b>)와 "어떤 상황에 어떤 분포"를 슬라이더로 익혀요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 분포란</button>
+    <button data-s="1">01 · 베르누이·이항</button>
+    <button data-s="2">02 · 포아송</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — A Distribution is a Shape</span>
+    <h2>분포 = "어떤 값이 얼마나 자주" 의 모양</h2>
+    <p class="lead">확률분포는 각 값이 나올 확률을 그린 <b>모양</b>이에요. 상황의 구조가 모양을 정해요 — 그래서 같은 모양이 여기저기 반복돼 나타나죠.</p>
+    <div class="twocol" style="margin-top:6px">
+      <div class="colbox"><h4 style="color:var(--q)">베르누이</h4><p class="note" style="margin:0">단 한 번의 성공/실패. (동전 1번, 클릭할까 말까)</p></div>
+      <div class="colbox"><h4 style="color:var(--v)">이항</h4><p class="note" style="margin:0">같은 시도 n번 중 <b>성공 횟수</b>. (자유투 10개 중 몇 골)</p></div>
+      <div class="colbox"><h4 style="color:var(--hot)">포아송</h4><p class="note" style="margin:0">정해진 시간·공간에 <b>드문 사건</b>이 몇 번. (1시간 손님 수)</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">→ 분포를 알면 "이 상황에서 그 일이 일어날 확률"을 바로 계산할 수 있어요. 같은 구조면 같은 분포 — 그래서 몇 개만 알면 폭넓게 써먹어요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Bernoulli &amp; Binomial</span>
+    <h2>n번 시도, 성공은 몇 번?</h2>
+    <p class="lead">성공확률 <b>p</b>인 시도를 <b>n번</b>(각 시도가 <b>서로 독립</b>이고 p가 매번 같다는 가정) 했을 때 성공 횟수의 분포가 <b>이항분포</b>예요(n=1이면 베르누이). 자유투 n개, 성공률 p — 막대가 "성공 k번일 확률"이에요. 평균은 <b>np</b>.</p>
+    <div class="ctrl"><label>시도 횟수 n</label><input type="range" id="n" min="1" max="30" value="10"><span class="val" id="nv">10</span></div>
+    <div class="ctrl"><label>성공확률 p</label><input type="range" id="p" min="5" max="95" value="50"><span class="val" id="pv">0.50</span></div>
+    <div class="chart-wrap" id="binChart"></div>
+    <div id="info1" class="callout q" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ p=0.5면 좌우대칭, p가 치우치면 분포도 기울어요. n이 커질수록 막대가 <b>종 모양</b>에 가까워지는 게 보이죠 — 이게 6장 정규분포·8장 CLT의 복선이에요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Poisson</span>
+    <h2>드문 사건이 몇 번이나 일어날까</h2>
+    <p class="lead"><b>포아송분포</b>는 "정해진 구간에 평균 <b>λ</b>번, <b>서로 독립적·일정한 비율로</b> 일어나는 사건"의 횟수예요. 콜센터 1시간 전화 수, 페이지 오타 수, 별똥별 수… λ만 알면 "0번/1번/2번… 일어날 확률"이 정해져요.</p>
+    <div class="ctrl"><label>평균 발생 λ</label><input type="range" id="lam" min="1" max="150" value="30"><span class="val" id="lamv">3.0</span></div>
+    <div class="chart-wrap" id="poisChart"></div>
+    <div id="info2" class="callout v" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 포아송은 사실 <b>이항의 극한</b>이에요 — "기회는 아주 많고(n→∞) 각 성공확률은 아주 작은데(p→0) 평균 np=λ는 일정"한 상황. λ가 커지면 역시 <b>종 모양</b>으로 가요.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Which Distribution When</span>
+    <h2>어떤 상황에 어떤 분포</h2>
+    <table class="cmp" id="cmpTable"></table>
+    <div class="callout good" style="margin-top:14px">
+      <p style="margin:0">핵심: <b>상황의 구조</b>가 분포를 정해요. "한 번 성패→베르누이", "n번 중 성공수→이항", "드문 사건 횟수→포아송". 그리고 <b>n이나 λ가 커지면 모두 종 모양(정규분포)</b>으로 수렴해요 — 정규분포가 왜 그렇게 흔한지가 다음 장 주제예요.</p>
+    </div>
+    <p class="note" style="margin-top:16px">→ 다음 <b>6장 정규분포</b>: 가장 중요한 연속 분포, 종 모양과 68-95-99.7 규칙.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 분포는 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 05 · 분포');
+VZ.setupStepper();
+
+// 이산 PMF 막대 렌더러
+function pmfBars(probs, opts={}){
+  const W=opts.W||540, H=opts.H||210, padL=24, padR=12, padT=12, padB=28;
+  const K=probs.length, plotW=W-padL-padR, bw=plotW/K;
+  const mx=Math.max(...probs,1e-9);
+  const py=p=>H-padB-(p/mx)*(H-padT-padB);
+  let g='';
+  for(let k=0;k<K;k++){ const x=padL+k*bw, y=py(probs[k]);
+    g+=`<rect x="${(x+bw*0.12).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*0.76).toFixed(1)}" height="${Math.max(0,H-padB-y).toFixed(1)}" rx="2" fill="${opts.color||'var(--q)'}" opacity="0.82"/>`;
+    if(K<=22 || k%Math.ceil(K/22)===0) g+=`<text x="${(x+bw/2).toFixed(1)}" y="${H-padB+14}" text-anchor="middle" fill="var(--muted)" font-size="9" font-family="JetBrains Mono">${k}</text>`;
+  }
+  g+=`<line class="axis" x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}"/>`;
+  if(opts.mean!=null){ const x=padL+(opts.mean+0.5)*bw; const anc=x>W*0.65?'end':'start'; const lx=anc==='end'?x-4:x+4;
+    g+=`<line x1="${x.toFixed(1)}" y1="${padT}" x2="${x.toFixed(1)}" y2="${H-padB}" stroke="var(--hot)" stroke-width="2" stroke-dasharray="4 3"/><text x="${lx.toFixed(1)}" y="${padT+4}" text-anchor="${anc}" fill="var(--hot)" font-size="10" font-family="JetBrains Mono">평균 ${opts.mean.toFixed(1)}</text>`; }
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.aria||'확률분포 막대'}" style="max-width:100%;display:block">${g}</svg>`;
+}
+function binom(n,p){ const a=[]; let c=1; for(let k=0;k<=n;k++){ a.push(c*Math.pow(p,k)*Math.pow(1-p,n-k)); c=c*(n-k)/(k+1); } return a; }
+function pois(lam,kmax){ const a=[]; let t=Math.exp(-lam); for(let k=0;k<=kmax;k++){ a.push(t); t=t*lam/(k+1); } return a; }
+
+// ---------- STEP 1 : 이항 ----------
+(function(){
+  let n=10, p=0.5;
+  function render(){
+    const pmf=binom(n,p), mean=n*p, sd=Math.sqrt(n*p*(1-p));
+    document.getElementById('binChart').innerHTML = pmfBars(pmf, {color:'var(--q)', mean, aria:'이항분포'});
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--q)">이항분포 B(n=${n}, p=${p.toFixed(2)})</div>
+       <p style="margin:0">평균 = n·p = <b>${mean.toFixed(1)}</b> · 표준편차 = √(np(1−p)) = <b>${sd.toFixed(2)}</b>. 가장 확률 높은 성공 횟수는 평균 근처예요.</p>`;
+  }
+  document.getElementById('n').oninput=e=>{ n=+e.target.value; document.getElementById('nv').textContent=n; render(); };
+  document.getElementById('p').oninput=e=>{ p=e.target.value/100; document.getElementById('pv').textContent=p.toFixed(2); render(); };
+  render();
+})();
+
+// ---------- STEP 2 : 포아송 ----------
+(function(){
+  let lam=3;
+  function render(){
+    const kmax=Math.max(10, Math.ceil(lam+4*Math.sqrt(lam)));
+    const pmf=pois(lam,kmax);
+    document.getElementById('poisChart').innerHTML = pmfBars(pmf, {color:'var(--v)', mean:lam, aria:'포아송분포'});
+    document.getElementById('info2').innerHTML =
+      `<div class="ttl" style="color:var(--v)">포아송분포 (λ=${lam.toFixed(1)})</div>
+       <p style="margin:0">평균 = 분산 = <b>λ = ${lam.toFixed(1)}</b> (포아송의 특징!). 표준편차 = √λ = ${Math.sqrt(lam).toFixed(2)}. λ가 작으면 0~1에 쏠리고, 커지면 대칭 종 모양.</p>`;
+  }
+  document.getElementById('lam').oninput=e=>{ lam=e.target.value/10; document.getElementById('lamv').textContent=lam.toFixed(1); render(); };
+  render();
+})();
+
+// ---------- STEP 3 : 비교표 ----------
+(function(){
+  const ROWS=[
+    ['베르누이','단 1번의 성공/실패','동전 1번, 광고 클릭 여부','p (성공확률)'],
+    ['이항','독립 n번 중 성공 횟수','자유투 10개 중 성공 수, 불량품 수','n, p · 평균 np'],
+    ['포아송','독립·일정 비율로 일어나는 사건 횟수','1시간 전화 수, 페이지 오타 수','λ · 평균=분산=λ'],
+    ['정규(6장)','연속 + 많은 것의 합/평균','키, 측정오차, 표본평균','평균 μ, 표준편차 σ'],
+  ];
+  document.getElementById('cmpTable').innerHTML =
+    `<tr><th>분포</th><th>언제</th><th>예시</th><th>모수</th></tr>`+
+    ROWS.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('');
+})();
+</script>
+</body>
+</html>
