@@ -82,7 +82,7 @@
     <h2>이 코스에서 배울 것 — 그리고 왜 이 순서인지</h2>
     <p class="lead">먼저 <b>확률</b>(앞일을 숫자로)을 세우고, <b>확률변수와 분포</b>로 무작위를 모형화해요. 그다음 <b>큰 수의 법칙·중심극한정리</b>로 "표본→진실"의 다리를 놓고, <b>통계적 추론</b>(추정·검정)으로 데이터에서 결론을 끌어내요. 마지막에 <b>관계와 함정</b>을 봅니다.</p>
     <div id="courseMap"></div>
-    <p class="note" style="margin-top:16px">→ 챕터는 순차 공개돼요. <b>CH 01 · 확률이란</b>부터 시작하세요.</p>
+    <p class="note" style="margin-top:16px">→ 첫 챕터가 열렸어요! <a href="01-probability.html" style="color:var(--q);font-weight:700">CH 01 · 확률이란</a>부터 시작하세요.(나머지는 순차 공개)</p>
   </section>
 
   <p class="foot">// 수식 없는 입문 챕터 · 직관 먼저, 자세한 건 다음 챕터부터 · <a href="index.html">목차</a></p>
@@ -166,7 +166,7 @@ VZ.setupStepper();
     ['CH 10~12','통계적 추론','추정(최대우도) → 신뢰구간 → 가설검정과 p-value.','var(--good)'],
     ['CH 13~14','관계와 함정','상관과 회귀(상관≠인과) → 통계의 함정(도박사 오류·평균회귀·심슨 역설).','var(--pink)'],
   ];
-  const READY=new Set([]);   // 완성된 챕터 파일명을 추가하면 링크 활성화
+  const READY=new Set(['01-probability.html']);   // 완성된 챕터 파일명을 추가하면 링크 활성화
   const FILE=['01-probability.html','04-random-variables.html','07-law-large-numbers.html','10-estimation.html','13-correlation-regression.html'];
   document.getElementById('courseMap').innerHTML = MAP.map((m,i)=>{
     const href=FILE[i], soon=!READY.has(href), tag=soon?'span':'a';

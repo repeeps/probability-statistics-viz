@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 확률이란 · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .dice{display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;}
+  .face{width:50px; height:50px; border-radius:11px; border:1px solid var(--line); background:var(--panel-2);
+    display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; color:var(--muted); cursor:pointer; user-select:none; transition:.12s;}
+  .face.on{background:rgba(55,189,248,.18); border-color:var(--q); color:var(--q);}
+  .face.roll{background:rgba(251,191,36,.25); border-color:var(--hot); color:var(--hot);}
+  .frac{font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:800;}
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:16px;} @media(max-width:680px){.twocol{grid-template-columns:1fr;}}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .cnt{display:flex; gap:6px; align-items:flex-end; height:90px; margin-top:8px;}
+  .cnt .bar{flex:1; background:var(--q); border-radius:4px 4px 0 0; min-height:2px; position:relative;}
+  .cnt .bar span{position:absolute; top:-16px; left:0; right:0; text-align:center; font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace;}
+  .cnt .lab{font-size:11px; color:var(--faint); text-align:center; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 1 · Chapter 01</div>
+    <h1>확률이란 — 불확실함을 0~1 사이 숫자로</h1>
+    <p class="intro">"내일 비 올 확률 70%", "이 동전 앞면 확률 0.5". 확률은 <b>일어날 가능성</b>을 0(불가능)~1(확실) 사이 숫자로 나타낸 거예요. 그런데 그 숫자는 어디서 올까요? 두 가지 관점 — <b>장기 빈도</b>와 <b>믿음의 정도</b> — 을 보고, 확률을 직접 세고 던져보며 익혀요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 확률이란</button>
+    <button data-s="1">01 · 표본공간과 사건</button>
+    <button data-s="2">02 · 장기 빈도</button>
+    <button data-s="3">03 · 확률의 규칙</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — What is Probability</span>
+    <h2>"확률 0.7"은 두 가지로 읽을 수 있다</h2>
+    <p class="lead">같은 "0.7"도 맥락에 따라 의미가 달라요. 둘 다 0~1 사이 숫자이고, 둘 다 유용해요.</p>
+    <div class="twocol">
+      <div class="colbox"><h4 style="color:var(--q);margin:0 0 6px">① 빈도 (frequentist)</h4>
+        <p class="note" style="margin:0">"<b>똑같은 상황을 무수히 반복</b>하면 70%에서 일어난다." 동전·주사위·반복 실험에 자연스러워요. 검증 가능하죠.</p></div>
+      <div class="colbox"><h4 style="color:var(--v);margin:0 0 6px">② 믿음 (subjective)</h4>
+        <p class="note" style="margin:0">"<b>내가 가진 정보로 볼 때</b> 70% 확신한다." 한 번뿐인 일(내일 비·이 환자)에도 쓸 수 있어요. 새 증거로 갱신돼요(3장 베이즈).</p></div>
+    </div>
+    <div class="callout" style="margin-top:14px">
+      <p style="margin:0"><b style="color:var(--hot)">공통 규칙</b>: 어떤 관점이든 확률은 <b>0 이상 1 이하</b>이고, 일어날 수 있는 <b>모든 경우의 확률을 더하면 1</b>이에요. 이 두 규칙 위에 모든 확률·통계가 세워져요.</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 이 장에선 가장 다루기 쉬운 <b>"동등하게 일어나는 경우"</b>(공정한 주사위)부터 시작해요 — 확률 = 유리한 경우 ÷ 전체 경우.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Sample Space &amp; Events</span>
+    <h2>확률 = 유리한 경우 ÷ 전체 경우</h2>
+    <p class="lead">공정한 주사위의 <b>표본공간</b>은 {1,2,3,4,5,6} — 모두 동등하게 1/6. <b>사건</b>은 그중 우리가 관심 있는 결과들의 묶음이에요. 눈을 클릭해 사건 A를 만들면, P(A)가 바로 계산돼요.</p>
+    <div class="dice" id="dice1"></div>
+    <div class="row" style="gap:8px;margin:6px 0 12px">
+      <span class="note">빠른 사건:</span>
+      <button class="btn" id="evEven">짝수</button>
+      <button class="btn" id="evHigh" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">4 이상</button>
+      <button class="btn" id="evPrime" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">소수</button>
+    </div>
+    <div id="info1" class="callout q"></div>
+    <p class="note" style="margin-top:12px">→ 사건이 클수록(유리한 경우가 많을수록) 확률이 커져요. 아무 눈도 없으면 P=0(불가능한 사건), 다 고르면 P=1(반드시 일어남). 이게 "<b>경우의 수로 세는</b>" 고전적 확률이에요.</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">⚠️ 단, 이 "경우의 수 나누기"는 <b>모든 결과가 똑같이 잘 나올 때(공정한 주사위)만</b> 통해요. 찌그러진 주사위라면 직접 던져 세야 하죠 — 그래서 다음 스텝의 "빈도" 관점이 필요해요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Probability as Long-Run Frequency</span>
+    <h2>실제로 던져보면 그 숫자로 모인다</h2>
+    <p class="lead">이론 확률(경우의 수)이 진짜 맞을까? <b>짝수가 나올 확률</b>(이론 0.5)을 실제로 던져 확인해요. 많이 던질수록 상대빈도가 이론값에 가까워져요 — 이게 "확률 = 장기 상대빈도"예요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="r1">+1 던지기</button><button class="btn" id="r50">+50</button><button class="btn" id="r500">+500</button>
+      <button class="btn" id="rreset" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">↺ 리셋</button>
+    </div>
+    <div class="dice" id="dice2"></div>
+    <div class="cnt" id="counts"></div>
+    <div class="legend" style="margin-top:2px">각 눈이 나온 횟수 — 많이 던질수록 6칸이 점점 고르게 평평해져요(적게 던지면 들쭉날쭉이 정상)</div>
+    <div id="info2" class="callout v" style="margin-top:12px"></div>
+    <div class="chart-wrap" id="freqChart" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:10px">→ 짝수 상대빈도가 <b>0.5</b>로 수렴하죠. 이론(경우의 수)과 실제(빈도)가 만나요. "충분히 많이 반복하면 빈도 = 확률" — 통계가 확률을 측정하는 방법이에요(7장 큰 수의 법칙).</p>
+    <p class="note" style="margin-top:8px;color:var(--faint)">⚠️ 단, 각 던짐은 직전과 무관(독립)해요. 짝수가 5번 연속 나와도 다음이 홀수일 확률은 여전히 0.5 — 빈도가 "균형을 맞추려" 모이는 게 아니라 그냥 평균이 안정될 뿐이에요(14장 도박사 오류).</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — The Rules · Recap</span>
+    <h2>확률의 세 가지 기본 규칙</h2>
+    <div class="twocol" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="callout q"><div class="ttl" style="font-size:14px">① 범위</div><p style="margin:0;font-size:13px">모든 확률은 <b>0 ≤ P ≤ 1</b>. 0=불가능, 1=확실.</p></div>
+      <div class="callout v"><div class="ttl" style="font-size:14px">② 전체 합 = 1</div><p style="margin:0;font-size:13px">표본공간 전체 경우의 확률을 더하면 <b>1</b>.</p></div>
+      <div class="callout good"><div class="ttl" style="font-size:14px">③ 여사건</div><p style="margin:0;font-size:13px"><b>P(A 아님) = 1 − P(A)</b>. "안 일어날 확률".</p></div>
+    </div>
+    <div class="callout" style="margin-top:14px">
+      <div class="ttl">합사건: P(A 또는 B)</div>
+      <p style="margin:0">서로 <b>겹치지 않으면</b>(배반) P(A 또는 B) = P(A) + P(B). 겹치면 겹친 부분을 한 번 빼줘요: P(A)+P(B)−P(A와 B). 예) 주사위에서 "짝수 또는 4이상" = 3/6 + 3/6 − 2/6 = 4/6(짝수면서 4이상인 4,6을 중복 제거).</p>
+    </div>
+    <p class="note" style="margin-top:16px">→ 여사건은 강력해요 — "적어도 하나"의 확률은 "하나도 안 일어남"의 여사건으로 쉽게 구하거든요. 다음 <b>2장</b>에서 "B를 알 때 A의 확률"(조건부확률)과 독립을 다뤄요.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 확률·빈도는 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 01 · 확률이란');
+VZ.setupStepper();
+
+// ---------- STEP 1 : 사건 만들기 ----------
+(function(){
+  let A=new Set([2,4,6]);   // 기본: 짝수
+  function render(){
+    document.getElementById('dice1').innerHTML = [1,2,3,4,5,6].map(d=>
+      `<div class="face ${A.has(d)?'on':''}" data-d="${d}">${d}</div>`).join('');
+    document.getElementById('dice1').querySelectorAll('.face').forEach(f=>f.onclick=()=>{
+      const d=+f.dataset.d; A.has(d)?A.delete(d):A.add(d); render();
+    });
+    const k=A.size, p=k/6;
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--q)">사건 A = {${[...A].sort((a,b)=>a-b).join(', ')||'∅'}}</div>
+       <p style="margin:0">P(A) = <span class="frac">${k}/6</span> = <b>${p.toFixed(3)}</b> ${k===0?'(불가능)':k===6?'(반드시!)':''}</p>`;
+  }
+  function setA(arr){ A=new Set(arr);
+    [['evEven','짝수'],['evHigh','4 이상'],['evPrime','소수']].forEach(([id])=>{
+      document.getElementById(id).style.cssText='border-color:var(--line);background:var(--panel-2);color:var(--muted)'; });
+    render();
+  }
+  document.getElementById('evEven').onclick=()=>setA([2,4,6]);
+  document.getElementById('evHigh').onclick=()=>setA([4,5,6]);
+  document.getElementById('evPrime').onclick=()=>setA([2,3,5]);
+  render();
+})();
+
+// ---------- STEP 2 : 장기 빈도 ----------
+(function(){
+  let counts, n, evenCount, hist, lastRoll=null;
+  function reset(){ counts=[0,0,0,0,0,0]; n=0; evenCount=0; hist=[]; lastRoll=null; render(); info('주사위를 던져 "짝수" 상대빈도가 0.5로 가는지 보세요.'); }
+  function roll(k){
+    for(let i=0;i<k;i++){ const d=1+Math.floor(Math.random()*6); counts[d-1]++; n++; if(d%2===0) evenCount++; lastRoll=d;
+      if(n<=20 || n%Math.max(1,Math.round(n/60))===0 || i===k-1) hist.push([n, evenCount/n]); }
+    render();
+    info(`<div class="ttl" style="color:var(--v)">${n.toLocaleString()}번 던짐 · 짝수 ${evenCount.toLocaleString()}</div>
+      <p style="margin:0">짝수 상대빈도 = <b>${(evenCount/n).toFixed(3)}</b> (이론 0.5와 차이 ${Math.abs(evenCount/n-0.5).toFixed(3)})</p>`);
+  }
+  function render(){
+    const mx=Math.max(...counts,1);
+    document.getElementById('dice2').innerHTML = [1,2,3,4,5,6].map(d=>
+      `<div class="face ${d===lastRoll?'roll':''}">${d}</div>`).join('');
+    document.getElementById('counts').innerHTML = counts.map((c,i)=>
+      `<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%">
+        <div class="bar" style="height:${(c/mx*70+2).toFixed(0)}px"><span>${c}</span></div>
+        <div class="lab">${i+1}</div></div>`).join('');
+    if(hist.length>1) document.getElementById('freqChart').innerHTML =
+      VZ.linePlot([{pts:hist,color:'var(--v)',label:'짝수 비율'}],{W:540,H:190,xlab:'던진 횟수',ymin:0,ymax:1,legend:false,hline:{y:0.5,label:'0.5'}});
+    else document.getElementById('freqChart').innerHTML='<div class="legend" style="padding:24px;text-align:center">+50 / +500을 누르면 수렴 곡선이 그려져요.</div>';
+  }
+  function info(m){ document.getElementById('info2').innerHTML=m; }
+  document.getElementById('r1').onclick=()=>roll(1);
+  document.getElementById('r50').onclick=()=>roll(50);
+  document.getElementById('r500').onclick=()=>roll(500);
+  document.getElementById('rreset').onclick=reset;
+  reset();
+})();
+</script>
+</body>
+</html>
