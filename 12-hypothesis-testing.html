@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 가설검정·p-value · 확률과 통계, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+  .legend{font-size:12px; color:var(--faint); line-height:1.7; font-family:'JetBrains Mono',monospace;}
+  .twocol{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;}
+  .colbox{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px;}
+  .wrongbox{border-left:3px solid var(--k); padding:8px 12px; margin:6px 0; background:rgba(251,113,133,.05); border-radius:0 8px 8px 0;}
+  .matrix{display:grid; grid-template-columns:auto 1fr 1fr; gap:6px; font-size:12px; margin-top:4px;}
+  .matrix div{padding:8px; border:1px solid var(--line); border-radius:8px; text-align:center;}
+  .mh{background:var(--panel-2); color:var(--muted); font-weight:600;}
+  .ok{background:rgba(74,222,128,.08); border-color:rgba(74,222,128,.3);}
+  .bad{background:rgba(251,113,133,.08); border-color:rgba(251,113,133,.3);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag">PART 4 · Chapter 12</div>
+    <h1>가설검정·p-value — 우연으로 보기엔 너무 이상한가?</h1>
+    <p class="intro">데이터에서 뭔가 차이가 보일 때, 그게 <b>진짜</b>인지 <b>우연의 장난</b>인지 어떻게 가릴까요? 가설검정은 "<b>아무 효과도 없다(귀무가설)</b>"를 기본으로 깔고, 관측된 결과가 그 가정 아래서 <b>너무 이상하면</b> 그 가정을 버려요. 그 "이상한 정도"를 재는 게 <b>p-value</b>예요 — 통계에서 가장 강력하고, 가장 자주 오해받는 숫자.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 재판처럼</button>
+    <button data-s="1">01 · p = 꼬리 넓이</button>
+    <button data-s="2">02 · 두 오류와 p-해킹</button>
+    <button data-s="3">03 · 오해 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — Like a Trial</span>
+    <h2>무죄 추정에서 시작한다</h2>
+    <p class="lead">재판은 피고를 <b>무죄로 가정</b>하고 시작해, 증거가 "합리적 의심을 넘어설 만큼" 강할 때만 유죄로 뒤집어요. 가설검정도 똑같아요. <b>귀무가설 H₀</b>("효과 없음 · 차이 없음 · 공정함")를 깔고, 데이터가 그 가정으로는 설명하기 <b>너무 힘들 때</b>만 기각해요.</p>
+    <div class="callout" style="margin-top:6px">
+      <p style="margin:0 0 8px"><b style="color:var(--q)">p-value의 정의</b>: "<b>H₀가 참이라고 가정했을 때</b>, 지금 관측된 것만큼 또는 <b>더 극단적인</b> 결과가 나올 확률." p가 작다 = 그런 결과는 H₀ 아래선 좀처럼 안 나온다 = H₀가 의심스럽다.</p>
+      <p style="margin:0"><b style="color:var(--hot)">유의수준 α</b>(보통 0.05): 미리 정한 기준선. <b>p &lt; α면 H₀ 기각</b>("유의하다"). α는 "무죄인 사람을 유죄로 잘못 판단할" 위험을 우리가 얼마나 감수할지예요.</p>
+    </div>
+    <p class="note" style="margin-top:14px">→ 중요: 기각 못 했다고 "H₀가 참"으로 <b>증명</b>된 게 아니에요. 재판의 "무죄"가 "결백 증명"이 아니라 "유죄 입증 실패"이듯이.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — p as Tail Area</span>
+    <h2>p-value를 꼬리 넓이로 보기</h2>
+    <p class="lead">의심스러운 동전을 검정해요. <b>H₀: 공정하다(앞면 확률 0.5)</b>. n번 던져 앞면 비율을 관측하면, H₀가 참일 때 결과는 가운데(0.5) 종모양으로 흩어져요(CLT). 관측값이 <b>그만큼 또는 더 극단적</b>일 넓이(양쪽 빨간 꼬리)가 바로 <b>p-value</b>예요. <span class="note">치우침이 앞·뒤 <b>어느 방향이든</b> 똑같이 이상하니, 양쪽 꼬리를 함께 더해요(양측검정).</span></p>
+    <div class="ctrl"><label>관측된 앞면 비율</label><input type="range" id="obs" min="40" max="60" value="58"><span class="val" id="obsv">58%</span></div>
+    <div class="row" style="gap:8px;margin:8px 0">
+      <span class="note">던진 횟수 n:</span>
+      <button class="btn" id="n50" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">50</button>
+      <button class="btn" id="n100">100</button>
+      <button class="btn" id="n500" style="border-color:var(--line);background:var(--panel-2);color:var(--muted)">500</button>
+    </div>
+    <div id="info1" class="callout q"></div>
+    <div class="chart-wrap" id="pvalChart" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:12px">→ 같은 "58%"라도 <b>n이 크면 p가 작아져요</b>: 표본이 클수록 0.5에서 조금만 벗어나도 "우연으론 드문 일"이 되거든요(꼬리가 더 얇아짐). 그래서 큰 표본에선 <b>아주 작은 차이도 유의</b>하게 나와요(2·3단계에서 그 함정을).</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Errors & p-hacking</span>
+    <h2>두 가지 오류, 그리고 p-해킹</h2>
+    <p class="lead">검정은 틀릴 수 있어요. <b>1종 오류</b>: H₀가 참인데 기각(거짓 양성) — 확률이 바로 α. <b>2종 오류</b>: H₀가 거짓인데 못 기각(거짓 음성). α를 낮추면 1종은 줄지만 2종은 늘어요.</p>
+    <div class="matrix">
+      <div class="mh"></div><div class="mh">H₀ 참 (효과 없음)</div><div class="mh">H₀ 거짓 (효과 있음)</div>
+      <div class="mh">기각함</div><div class="bad"><b style="color:var(--k)">1종 오류</b><br>거짓 양성 (확률 α)</div><div class="ok">정답 ✓<br>(검정력)</div>
+      <div class="mh">기각 못함</div><div class="ok">정답 ✓</div><div class="bad"><b style="color:var(--k)">2종 오류</b><br>거짓 음성 (확률 β)</div>
+    </div>
+    <p class="lead" style="margin-top:16px">α=0.05의 무서운 면: <b>효과가 전혀 없어도</b> 검정을 <b>여러 번</b> 하면 우연히 p&lt;0.05가 튀어나와요. 효과 없는 검정을 20번 돌려보세요.</p>
+    <div class="row" style="gap:8px;margin-bottom:8px">
+      <button class="btn" id="run20" style="border-color:var(--v)">효과 없는 검정 20번 실행</button>
+    </div>
+    <div id="info2" class="callout v"></div>
+    <div id="phChart" style="margin-top:8px"></div>
+    <p class="note" style="margin-top:12px">→ <b>p-해킹</b>: 여러 가설·하위그룹·지표를 마구 검정하다 우연히 나온 p&lt;0.05만 골라 보고하면, "유의한 발견"의 상당수가 <b>가짜</b>예요. 검정 횟수를 정직하게 세고 보정해야 해요.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Misreadings</span>
+    <h2>p-value 흔한 오해 4가지</h2>
+    <div class="wrongbox"><b style="color:var(--k)">✗ "p는 H₀가 참일 확률이다."</b><br><span class="legend">아니에요. p는 "<b>H₀가 참이라 가정했을 때</b> 이런 데이터가 나올 확률"이에요. 조건의 방향이 반대 — H₀의 확률이 아니라 데이터의 확률.</span></div>
+    <div class="wrongbox"><b style="color:var(--k)">✗ "p &lt; 0.05면 효과가 크다 / 중요하다."</b><br><span class="legend">p는 <b>효과 크기</b>가 아니라 "우연으로 보기 어려운 정도"예요. n이 크면 <b>하찮게 작은 차이</b>도 p&lt;0.05가 돼요. 통계적 유의 ≠ 실질적 중요.</span></div>
+    <div class="wrongbox"><b style="color:var(--k)">✗ "p &gt; 0.05면 효과가 없다(H₀ 참)."</b><br><span class="legend">기각 실패는 "증거 부족"이지 "효과 없음의 증명"이 아니에요. 표본이 작아 못 잡았을 수도 있어요(2종 오류).</span></div>
+    <div class="wrongbox"><b style="color:var(--k)">✗ "p=0.04와 p=0.06은 질적으로 다르다."</b><br><span class="legend">0.05는 임의의 관습선이에요. 둘은 거의 같은 증거인데 선 하나로 운명이 갈리는 건 과해요. p값과 함께 <b>효과 크기·신뢰구간</b>을 봐야 해요.</span></div>
+    <div class="callout good" style="margin-top:14px">
+      <p style="margin:0">p-value는 "<b>우연으로 설명되나</b>"만 답해요. "<b>효과가 얼마나 큰가</b>"는 <b>신뢰구간(11장)</b>과 <b>효과 크기</b>가 답하고, "<b>왜 그런가</b>(인과)"는 또 다른 문제예요. 셋을 함께 봐야 정직한 결론이 나와요.</p>
+    </div>
+    <p class="note" style="margin-top:16px;color:var(--faint)">단서: 여기 p값은 정규근사로 계산했어요(작은 n·극단 비율에선 정확한 이항검정과 살짝 달라요). 양측검정 기준이며, 모든 게 무작위·독립 표본 가정 위에 서요.</p>
+  </section>
+
+  <p class="foot">// 수식 없는 직관 입문 · 모든 p값·검정은 브라우저에서 실시간 계산 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script>
+VZ.mountTopnav('#topnav', 'CH 12 · 가설검정·p-value');
+VZ.setupStepper();
+const npd=VZ.ST.normalPdf, Phi=VZ.ST.normalCdf;
+
+// ---------- STEP 1 : p-value를 꼬리 넓이로 ----------
+(function(){
+  let obs=0.58, n=100;
+  function pval(){ const sd=Math.sqrt(0.25/n), d=Math.abs(obs-0.5);
+    return { sd, d, p: 2*(1-Phi(0.5+d,0.5,sd)) }; }
+  function plot(){
+    const {sd,d}=pval();
+    const W=560,H=240,padL=14,padR=14,padT=16,padB=30;
+    const m=Math.max(4*sd, d+1.2*sd);   // 관측값이 항상 프레임 안에 들어오도록(클리핑 방지)
+    const lo=0.5-m, hi=0.5+m, plotW=W-padL-padR, plotH=H-padT-padB, peak=npd(0.5,0.5,sd);
+    const px=x=>padL+(x-lo)/(hi-lo)*plotW, py=y=>padT+plotH-(y/peak)*plotH*0.9;
+    const loE=0.5-d, hiE=0.5+d;
+    const areaPath=(x1,x2)=>{ let dd=`M ${px(x1).toFixed(1)} ${py(0).toFixed(1)}`;
+      for(let i=0;i<=40;i++){ const x=x1+(x2-x1)*i/40; dd+=` L ${px(x).toFixed(1)} ${py(npd(x,0.5,sd)).toFixed(1)}`; }
+      return dd+` L ${px(x2).toFixed(1)} ${py(0).toFixed(1)} Z`; };
+    let g='';
+    if(d>0){ g+=`<path d="${areaPath(lo,loE)}" fill="var(--k)" opacity="0.42"/>`;
+             g+=`<path d="${areaPath(hiE,hi)}" fill="var(--k)" opacity="0.42"/>`; }
+    let cd=''; for(let i=0;i<=120;i++){ const x=lo+(hi-lo)*i/120; cd+=(i?'L':'M')+px(x).toFixed(1)+','+py(npd(x,0.5,sd)).toFixed(1); }
+    g+=`<path d="${cd}" fill="none" stroke="var(--q)" stroke-width="2.5"/>`;
+    g+=`<line x1="${padL}" y1="${py(0).toFixed(1)}" x2="${W-padR}" y2="${py(0).toFixed(1)}" class="axis"/>`;
+    g+=`<line x1="${px(0.5).toFixed(1)}" y1="${padT}" x2="${px(0.5).toFixed(1)}" y2="${py(0).toFixed(1)}" stroke="var(--faint)" stroke-width="1" stroke-dasharray="3,3"/>`;
+    g+=`<line x1="${px(obs).toFixed(1)}" y1="${padT}" x2="${px(obs).toFixed(1)}" y2="${py(0).toFixed(1)}" stroke="var(--hot)" stroke-width="2"/>`;
+    g+=`<text x="${px(obs).toFixed(1)}" y="${padT-4}" text-anchor="middle" class="axislabel" fill="var(--hot)">관측 ${(obs*100).toFixed(0)}%</text>`;
+    g+=`<text x="${px(0.5).toFixed(1)}" y="${H-8}" text-anchor="middle" class="axislabel">H₀: 0.5</text>`;
+    document.getElementById('pvalChart').innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="p-value 꼬리 넓이" style="max-width:100%;display:block">${g}</svg>`;
+  }
+  function render(){ const {sd,d,p}=pval(); const z=(obs-0.5)/sd; plot();
+    const sig=p<0.05;
+    const body = d===0
+      ? '관측이 정확히 0.5라 치우침이 전혀 없어요. <b>p = 1.0000</b> — H₀와 완벽히 일치하니 기각할 이유가 없죠.'
+      : `양쪽 빨간 꼬리 넓이 = <b>p = ${p<0.0001?'&lt;0.0001':p.toFixed(4)}</b>. ${sig
+         ? '<b style="color:var(--good)">p &lt; 0.05 → H₀ 기각</b>: 공정한 동전으론 이만큼 치우치기 드물어요.'
+         : '<b style="color:var(--muted)">p ≥ 0.05 → 기각 못함</b>: 공정한 동전으로도 충분히 나올 수 있는 결과예요.'}`;
+    document.getElementById('info1').innerHTML =
+      `<div class="ttl" style="color:var(--q)">관측 ${(obs*100).toFixed(0)}% · n=${n} · z=${z.toFixed(2)}</div>
+       <p style="margin:0">${body}</p>`;
+  }
+  function setN(v){ n=v; [['n50',50],['n100',100],['n500',500]].forEach(([id,vv])=>{ document.getElementById(id).style.cssText = vv===v?'':'border-color:var(--line);background:var(--panel-2);color:var(--muted)'; }); render(); }
+  document.getElementById('obs').oninput=e=>{ obs=+e.target.value/100; document.getElementById('obsv').textContent=(obs*100).toFixed(0)+'%'; render(); };
+  document.getElementById('n50').onclick=()=>setN(50);
+  document.getElementById('n100').onclick=()=>setN(100);
+  document.getElementById('n500').onclick=()=>setN(500);
+  setN(100);
+})();
+
+// ---------- STEP 2 : p-해킹 (효과 없는 검정 20번) ----------
+(function(){
+  const n=100, K=20;
+  let totTests=0, totFP=0;     // 누적: 한 번의 운에 휘둘리지 않게
+  function oneP(){ let s=0; for(let i=0;i<n;i++) if(Math.random()<0.5) s++;   // H0 참: 공정한 동전
+    const ph=s/n, sd=Math.sqrt(0.25/n); return 2*(1-Phi(0.5+Math.abs(ph-0.5),0.5,sd)); }
+  function run(){
+    const ps=[]; for(let i=0;i<K;i++) ps.push(oneP());
+    const W=560,H=90,padL=14,padR=14, cw=(W-padL-padR)/K;
+    let g='', fp=0;
+    ps.forEach((p,i)=>{ const sig=p<0.05; if(sig) fp++;
+      const x=padL+i*cw+2, h=58, col=sig?'var(--k)':'var(--slate)';
+      g+=`<rect x="${x.toFixed(1)}" y="14" width="${(cw-4).toFixed(1)}" height="${h}" rx="3" fill="${col}" opacity="${sig?0.9:0.4}"/>`;
+      g+=`<text x="${(x+(cw-4)/2).toFixed(1)}" y="${sig?44:46}" text-anchor="middle" class="axislabel" fill="${sig?'#fff':'var(--faint)'}" style="font-size:9px">${p<0.05?p.toFixed(3):''}</text>`;
+    });
+    totTests+=K; totFP+=fp;
+    document.getElementById('phChart').innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="20번 검정" style="max-width:100%;display:block">${g}</svg><div class="legend" style="margin-top:2px">빨강 = 거짓 양성(p&lt;0.05) · 회색 = 기각 못함 (전부 효과 없는 검정)</div>`;
+    const head = fp===0
+      ? '이번엔 운 좋게 <b>0개</b>였어요 — 하지만 다시 돌려보세요.'
+      : `전부 공정한 동전(H₀ 참)인데도 <b>${fp}번</b>은 "유의함(p&lt;0.05)"이 떴어요.`;
+    document.getElementById('info2').innerHTML =
+      `<div class="ttl" style="color:var(--v)">효과 없는 검정 ${K}번 → 거짓 양성 <b style="color:var(--k)">${fp}개</b></div>
+       <p style="margin:0 0 6px">${head} 기대값은 약 20×0.05 ≈ <b>1개</b>. 매번 0~3개쯤 나와요 — 이게 우연이 만드는 가짜 발견이에요.</p>
+       <p style="margin:0;color:var(--faint)">누적 ${totTests.toLocaleString()}번 검정 중 거짓 양성 ${totFP}개 = <b>${(100*totFP/totTests).toFixed(1)}%</b> (오래 돌릴수록 5% 근처로 — 이 데모는 정규근사라 실제론 5%보다 살짝 높아요).</p>`;
+  }
+  document.getElementById('run20').onclick=run;
+  run();
+})();
+</script>
+</body>
+</html>

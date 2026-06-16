@@ -127,6 +127,14 @@
 
   const normalPdf = (x, mu, sd) => Math.exp(-((x - mu) ** 2) / (2 * sd * sd)) / (sd * Math.sqrt(2 * Math.PI));
 
+  // 누적분포 Φ — erf 근사(Abramowitz–Stegun 7.1.26), 정밀도 ~1e-7
+  function erf(x) {
+    const t = 1 / (1 + 0.3275911 * Math.abs(x));
+    const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return x >= 0 ? y : -y;
+  }
+  const normalCdf = (x, mu = 0, sd = 1) => 0.5 * (1 + erf((x - mu) / (sd * Math.SQRT2)));
+
   // values: 숫자 배열. opts: {W,H, bins, min,max, color, overlay:{fn,color,label}, band:{lo,hi,color,label}, xlab}
   function histogram(values, opts = {}) {
     const W = opts.W || 480, H = opts.H || 240, padL = 36, padR = 14, padT = 14, padB = 30;
@@ -170,5 +178,5 @@
     return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.aria || '히스토그램'}" style="max-width:100%;display:block">${g}</svg>`;
   }
 
-  VZ.ST = { normalPdf, histogram };
+  VZ.ST = { normalPdf, normalCdf, histogram };
 })(window);
